@@ -72,7 +72,7 @@ void update(
 
 //initialize solution arrays
 
-const int iterations = 3e6;
+const int iterations = 2e6;
 const int record = 1000;
 double x1_sol[iterations / record], x2_sol[iterations / record], y1_sol[iterations / record], y2_sol[iterations / record],
 px1_sol[iterations / record], px2_sol[iterations / record], py1_sol[iterations / record], py2_sol[iterations / record] = {};
@@ -86,7 +86,7 @@ int main()
     // initialize initial conditions for coordinates using the thermalised state
     double x1, x2, y1, y2, px1, px2, py1, py2;
 
-    std:: fstream initial_conditions("perturbed_coordinates.txt", std:: ios:: in);
+    std:: fstream initial_conditions("thermalised_coordinates.txt", std:: ios:: in);
     initial_conditions >> x1 >> x2>> y1 >> y2 >> px1 >> px2 >> py1 >> py2;
     initial_conditions.close();
     
