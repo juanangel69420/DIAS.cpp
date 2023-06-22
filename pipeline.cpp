@@ -81,7 +81,7 @@ void update(
     *H_y2_0 = *H_y2_n;
 }
 
-const int iterations = 100e4;
+const int iterations = 200e4;
 const int record = 1000;
 
 // initialize solution arrays
@@ -98,7 +98,7 @@ int main()
     const double dt = 1e-4;
 
     // Create the files needed for storing arrays
-    const int sample_number = 10;
+    const int sample_number = 20;
 
     // initialize initial conditions for coordinates using the thermalised state
 
@@ -136,13 +136,12 @@ int main()
         H_x2_n = H_x2(lam1,lam2,x1_n,x2_n,y1_n,y2_n), H_x2_n_ds = H_x2(lam1,lam2,x1_n_ds,x2_n_ds,y1_n_ds,y2_n_ds),
         H_y1_n = H_y1(lam1,lam2,x1_n,x2_n,y1_n,y2_n), H_y1_n_ds = H_y1(lam1,lam2,x1_n_ds,x2_n_ds,y1_n_ds,y2_n_ds),
         H_y2_n = H_y2(lam1,lam2,x1_n,x2_n,y1_n,y2_n), H_y2_n_ds = H_y2(lam1,lam2,x1_n_ds,x2_n_ds,y1_n_ds,y2_n_ds);
-        
-        std:: cout << "Distance was: " << sqrt(pow(px1 - px1_ds,2)) << std:: endl;
 
         /*
         Checking if the distance between px1 and px1_ds is small enough 
         (i.e. ensuring that the phase space points are sufficiently close together)
-        If not sufficiently close together update (i.e. simulate) for 1 second
+        and also making sure we don't have Nan
+        If both conditions not satisfied then update (i.e. simulate) for 1 second and check again
         */
         while (sqrt(pow(px1 - px1_ds,2)) > 1 || std:: isnan(px1_ds))
         {
@@ -153,8 +152,6 @@ int main()
                 px1_ds = get_px1_ds(lam1,lam2,Hamiltonian,x1_ds,x2_ds,y1_ds,y2_ds,px2_ds,py1_ds,py2_ds);    
             }
         }
-
-        std:: cout << "Distance now is: " << sqrt(pow(px1 - px1_ds,2)) << std:: endl;
 
         //Initialize first elements of solution arrays (Necessary to make update rule more efficient)
         x1_sol[0] = x1, x2_sol[0] = x2, y1_sol[0] = y1, y2_sol[0] = y2,
