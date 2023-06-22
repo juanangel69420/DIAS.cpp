@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cmath>
 #include <fstream>
+#include <typeinfo>
 
 // 
 // defining the Hamiltonian
@@ -143,7 +144,7 @@ int main()
         (i.e. ensuring that the phase space points are sufficiently close together)
         If not sufficiently close together update (i.e. simulate) for 1 second
         */
-        while (sqrt(pow(px1 - px1_ds,2)) > 1 || sqrt(pow(px1 - px1_ds,2)) != double)
+        while (sqrt(pow(px1 - px1_ds,2)) > 1 || std:: isnan(px1_ds))
         {
             for (int a = 0; a < 1000; a++)
             {

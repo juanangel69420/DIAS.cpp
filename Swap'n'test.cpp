@@ -1,12 +1,15 @@
 #include <iostream>
-#include <typeinfo>
 #include <cmath>
 
 int main()
 {
     double x = sqrt(-2);
-    std:: cout << x << std:: endl;
-    if(x == nan)
-        std:: cout << "x is true";
+    if(std:: isnan(x))
+    {
+        std:: cout << "x is nan";
+    }
+    else
+        std:: cout << "x is a number";
+    
     return 0;
 }
