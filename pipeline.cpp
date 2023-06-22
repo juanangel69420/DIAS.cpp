@@ -5,6 +5,7 @@
 #include <cmath>
 #include <fstream>
 
+// 
 // defining the Hamiltonian
 double H(double lam1, double lam2, double x1, double x2, double y1, double y2,double px1, double px2, double py1, double py2)
 {
@@ -92,7 +93,7 @@ void create_files(int example_number)
     }
 }
 
-const int iterations = 3e6;
+const int iterations = 1e6;
 const int record = 1000;
 
 // initialize solution arrays
@@ -109,9 +110,7 @@ int main()
     const double dt = 1e-4;
 
     // Create the files needed for storing arrays
-    const int array_size = 1;
-    create_files(array_size);
-    std:: fstream file_array[array_size];
+    const int sample_number = 2;
 
     // initialize initial conditions for coordinates using the thermalised state
 
@@ -128,7 +127,7 @@ int main()
     Rhoensfile >> Hamiltonian;
     Rhoensfile.close();
 
-    for (int i =0; i < array_size; i++)
+    for (int i =0; i < sample_number; i++)
     {
         // Obtain perturbed coordinates 
         x1_ds = x1+0.1, x2_ds = x2+0.1, y1_ds = y1+0.1, y2_ds = y2+0.1, px2_ds = px2+0.1, py1_ds = py1+0.1, py2_ds = py2+0.1;
@@ -158,7 +157,7 @@ int main()
         px1_sol_ds[0] = px1_ds, px2_sol_ds[0] = px2_ds, py1_sol_ds[0] = py1_ds, py2_sol_ds[0] = py2_ds;
 
 
-        for (int i = 0; i < iterations; i++)
+        for (int i = 1; i < iterations; i++)
         {
             update(lam1,lam2,dt,&x1,&x2,&y1,&y2,&px1,&px2,&py1,&py2,&H_x1_0,&H_x2_0,&H_y1_0,&H_y2_0,&x1_n,&x2_n,&y1_n,&y2_n,&H_x1_n,&H_x2_n,&H_y1_n,&H_y2_n);
             update(lam1,lam2,dt,&x1_ds,&x2_ds,&y1_ds,&y2_ds,&px1_ds,&px2_ds,&py1_ds,&py2_ds,&H_x1_0_ds,&H_x2_0_ds,&H_y1_0_ds,&H_y2_0_ds,&x1_n_ds,&x2_n_ds,&y1_n_ds,&y2_n_ds,&H_x1_n_ds,&H_x2_n_ds,&H_y1_n_ds,&H_y2_n_ds);
@@ -213,10 +212,17 @@ int main()
             file_out << py1_sol[i] << ",";
             file_out_ds << py1_sol_ds[i] << ",";
         }
-        for (int i=0; i < iterations / record; i++)
+        for (int i=0; i < iterations / record - 1; i++)
         {
             file_out << py2_sol[i] << ",";
             file_out_ds << py2_sol_ds[i] << ",";
         }
+
+        file_out << py2_sol[iterations / record - 1];
+        file_out_ds << py2_sol_ds[iterations / record -1];
+        file_out.close();
+        file_out_ds.close();
     }
+
+    return 0;
 }
