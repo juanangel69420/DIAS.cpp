@@ -125,7 +125,7 @@ int main()
 
     // Write the current hamiltonian into a file to be used in perturbation of state
 
-    std:: fstream Rhoensfile("CurrentHamiltonian.txt", std:: ios:: out);
+    std:: fstream Rhoensfile("CurrentHamiltonian1.0.txt", std:: ios:: out);
     Rhoensfile << H(lam1,lam2,x1,x2,y1,y2,px1,px2,py1,py2);
     Rhoensfile.close();
 

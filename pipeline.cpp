@@ -80,20 +80,7 @@ void update(
     *H_y2_0 = *H_y2_n;
 }
 
-void create_files(int example_number)
-{
-    for (int i = 1; i <= example_number; i++)
-    {
-        std:: string path = "C:/Users/cilli/VS programmes/Run1.0/run_" + std:: to_string(i) + ".txt";
-        std:: string path_ds = "C:/Users/cilli/VS programmes/Run1.0/run_ds" + std:: to_string(i) + ".txt"; 
-        std:: fstream current_file(path,std::ios::out);
-        std:: fstream current_file_ds(path_ds,std::ios::out);
-        current_file.close();
-        current_file_ds.close();
-    }
-}
-
-const int iterations = 1e6;
+const int iterations = 100e4;
 const int record = 1000;
 
 // initialize solution arrays
@@ -110,7 +97,7 @@ int main()
     const double dt = 1e-4;
 
     // Create the files needed for storing arrays
-    const int sample_number = 2;
+    const int sample_number = 10;
 
     // initialize initial conditions for coordinates using the thermalised state
 
@@ -123,7 +110,7 @@ int main()
     initial_conditions.close();
 
     double Hamiltonian;
-    std:: fstream Rhoensfile("CurrentHamiltonian.txt", std:: ios :: in);
+    std:: fstream Rhoensfile("CurrentHamiltonian1.0.txt", std:: ios :: in);
     Rhoensfile >> Hamiltonian;
     Rhoensfile.close();
 
@@ -148,6 +135,25 @@ int main()
         H_x2_n = H_x2(lam1,lam2,x1_n,x2_n,y1_n,y2_n), H_x2_n_ds = H_x2(lam1,lam2,x1_n_ds,x2_n_ds,y1_n_ds,y2_n_ds),
         H_y1_n = H_y1(lam1,lam2,x1_n,x2_n,y1_n,y2_n), H_y1_n_ds = H_y1(lam1,lam2,x1_n_ds,x2_n_ds,y1_n_ds,y2_n_ds),
         H_y2_n = H_y2(lam1,lam2,x1_n,x2_n,y1_n,y2_n), H_y2_n_ds = H_y2(lam1,lam2,x1_n_ds,x2_n_ds,y1_n_ds,y2_n_ds);
+        
+        std:: cout << "Distance was: " << sqrt(pow(px1 - px1_ds,2)) << std:: endl;
+
+        /*
+        Checking if the distance between px1 and px1_ds is small enough 
+        (i.e. ensuring that the phase space points are sufficiently close together)
+        If not sufficiently close together update (i.e. simulate) for 1 second
+        */
+        while (sqrt(pow(px1 - px1_ds,2)) > 1 || sqrt(pow(px1 - px1_ds,2)) != double)
+        {
+            for (int a = 0; a < 1000; a++)
+            {
+                update(lam1,lam2,dt,&x1,&x2,&y1,&y2,&px1,&px2,&py1,&py2,&H_x1_0,&H_x2_0,&H_y1_0,&H_y2_0,&x1_n,&x2_n,&y1_n,&y2_n,&H_x1_n,&H_x2_n,&H_y1_n,&H_y2_n);
+                x1_ds = x1+0.1, x2_ds = x2+0.1, y1_ds = y1+0.1, y2_ds = y2+0.1, px2_ds = px2+0.1, py1_ds = py1+0.1, py2_ds = py2+0.1;
+                px1_ds = get_px1_ds(lam1,lam2,Hamiltonian,x1_ds,x2_ds,y1_ds,y2_ds,px2_ds,py1_ds,py2_ds);    
+            }
+        }
+
+        std:: cout << "Distance now is: " << sqrt(pow(px1 - px1_ds,2)) << std:: endl;
 
         //Initialize first elements of solution arrays (Necessary to make update rule more efficient)
         x1_sol[0] = x1, x2_sol[0] = x2, y1_sol[0] = y1, y2_sol[0] = y2,
@@ -156,18 +162,18 @@ int main()
         x1_sol_ds[0] = x1_ds, x2_sol_ds[0] = x2_ds, y1_sol_ds[0] = y1_ds, y2_sol_ds[0] = y2_ds,
         px1_sol_ds[0] = px1_ds, px2_sol_ds[0] = px2_ds, py1_sol_ds[0] = py1_ds, py2_sol_ds[0] = py2_ds;
 
-
-        for (int i = 1; i < iterations; i++)
+        for (int j = 1; j < iterations; j++)
         {
             update(lam1,lam2,dt,&x1,&x2,&y1,&y2,&px1,&px2,&py1,&py2,&H_x1_0,&H_x2_0,&H_y1_0,&H_y2_0,&x1_n,&x2_n,&y1_n,&y2_n,&H_x1_n,&H_x2_n,&H_y1_n,&H_y2_n);
             update(lam1,lam2,dt,&x1_ds,&x2_ds,&y1_ds,&y2_ds,&px1_ds,&px2_ds,&py1_ds,&py2_ds,&H_x1_0_ds,&H_x2_0_ds,&H_y1_0_ds,&H_y2_0_ds,&x1_n_ds,&x2_n_ds,&y1_n_ds,&y2_n_ds,&H_x1_n_ds,&H_x2_n_ds,&H_y1_n_ds,&H_y2_n_ds);
-            if (i % record == 0)
+            
+            if (j % record == 0)
             {
-                x1_sol[i / record] = x1, x2_sol[i / record] = x2, y1_sol[i/ record] = y1, y2_sol[i / record] = y2;
-                px1_sol[i / record] = px1, px2_sol[i / record] = px2, py1_sol[i / record] = py1, py2_sol[i / record] = py2;
+                x1_sol[j / record] = x1, x2_sol[j / record] = x2, y1_sol[j/ record] = y1, y2_sol[j / record] = y2;
+                px1_sol[j / record] = px1, px2_sol[j / record] = px2, py1_sol[j / record] = py1, py2_sol[j / record] = py2;
 
-                x1_sol_ds[i / record] = x1_ds, x2_sol_ds[i / record] = x2_ds, y1_sol_ds[i/ record] = y1_ds, y2_sol_ds[i / record] = y2_ds;
-                px1_sol_ds[i / record] = px1_ds, px2_sol_ds[i / record] = px2_ds, py1_sol_ds[i / record] = py1_ds, py2_sol_ds[i / record] = py2_ds;
+                x1_sol_ds[j / record] = x1_ds, x2_sol_ds[j / record] = x2_ds, y1_sol_ds[j / record] = y1_ds, y2_sol_ds[j / record] = y2_ds;
+                px1_sol_ds[j / record] = px1_ds, px2_sol_ds[j / record] = px2_ds, py1_sol_ds[j / record] = py1_ds, py2_sol_ds[j / record] = py2_ds;
             }
         }
 
@@ -177,52 +183,51 @@ int main()
         std:: fstream file_out(path_out,std::ios::out);
         std:: fstream file_out_ds(path_out_ds,std::ios::out);
 
-        for (int i=0; i < iterations / record; i++)
+        for (int k=0; k < iterations / record; k++)
         {
-            file_out << x1_sol[i] << ",";
-            file_out_ds << x1_sol_ds[i] << ",";
+            file_out << x1_sol[k] << ",";
+            file_out_ds << x1_sol_ds[k] << ",";
         }
-        for (int i=0; i < iterations / record; i++)
+        for (int k=0; k < iterations / record; k++)
         {
-            file_out << x2_sol[i] << ",";
-            file_out_ds << x2_sol_ds[i] << ",";
+            file_out << x2_sol[k] << ",";
+            file_out_ds << x2_sol_ds[k] << ",";
         }
-        for (int i=0; i < iterations / record; i++)
+        for (int k=0; k < iterations / record; k++)
         {
-            file_out << y1_sol[i] << ",";
-            file_out_ds << y1_sol_ds[i] << ",";
+            file_out << y1_sol[k] << ",";
+            file_out_ds << y1_sol_ds[k] << ",";
         }
-        for (int i=0; i < iterations / record; i++)
+        for (int k=0; k < iterations / record; k++)
         {
-            file_out << y2_sol[i] << ",";
-            file_out_ds << y2_sol_ds[i] << ",";
+            file_out << y2_sol[k] << ",";
+            file_out_ds << y2_sol_ds[k] << ",";
         }
-        for (int i=0; i < iterations / record; i++)
+        for (int k=0; k < iterations / record; k++)
         {
-            file_out << px1_sol[i] << ",";
-            file_out_ds << px1_sol_ds[i] << ",";
+            file_out << px1_sol[k] << ",";
+            file_out_ds << px1_sol_ds[k] << ",";
         }
-        for (int i=0; i < iterations / record; i++)
+        for (int k=0; k < iterations / record; k++)
         {
-            file_out << px2_sol[i] << ",";
-            file_out_ds << px2_sol_ds[i] << ",";
+            file_out << px2_sol[k] << ",";
+            file_out_ds << px2_sol_ds[k] << ",";
         }
-        for (int i=0; i < iterations / record; i++)
+        for (int k=0; k < iterations / record; k++)
         {
-            file_out << py1_sol[i] << ",";
-            file_out_ds << py1_sol_ds[i] << ",";
+            file_out << py1_sol[k] << ",";
+            file_out_ds << py1_sol_ds[k] << ",";
         }
-        for (int i=0; i < iterations / record - 1; i++)
+        for (int k=0; k < iterations / record - 1; k++)
         {
-            file_out << py2_sol[i] << ",";
-            file_out_ds << py2_sol_ds[i] << ",";
+            file_out << py2_sol[k] << ",";
+            file_out_ds << py2_sol_ds[k] << ",";
         }
 
         file_out << py2_sol[iterations / record - 1];
         file_out_ds << py2_sol_ds[iterations / record -1];
         file_out.close();
         file_out_ds.close();
-    }
-
+    }    
     return 0;
 }
