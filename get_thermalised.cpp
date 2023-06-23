@@ -80,7 +80,7 @@ int main()
     const double dt = 1e-4;
     
     // provide initial conditions for coordinates
-    double x1 = 18, x2 = -20, y1 = 17, y2 = -12, px1 = 14, px2 = -16, py1 = 37, py2 = -13;
+    double x1 = 100, x2 = -200, y1 = 170, y2 = 200, px1 = 90, px2 = 160, py1 = 200, py2 = -300;
 
     double H_x1_0 = H_x1(lam1,lam2,x1,x2,y1,y2);
     double H_x2_0 = H_x2(lam1,lam2,x1,x2,y1,y2);
@@ -103,7 +103,7 @@ int main()
     }
 
     // Create and open a text file
-    std:: ofstream result("thermalised_coordinates.txt");
+    std:: ofstream result("C:/Users/cilli/DIAS.cpp/Run_files4.0/thermalised_coordinates.txt");
 
     // Write to the file
     result << x1 << "\n" << x2 << "\n" << y1 << "\n" << y2 << "\n" << 
@@ -125,7 +125,7 @@ int main()
 
     // Write the current hamiltonian into a file to be used in perturbation of state
 
-    std:: fstream Rhoensfile("CurrentHamiltonian1.0.txt", std:: ios:: out);
+    std:: fstream Rhoensfile("C:/Users/cilli/DIAS.cpp/Run_files4.0/CurrentHamiltonian1.0.txt", std:: ios:: out);
     Rhoensfile << H(lam1,lam2,x1,x2,y1,y2,px1,px2,py1,py2);
     Rhoensfile.close();
 

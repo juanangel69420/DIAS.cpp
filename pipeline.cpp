@@ -98,7 +98,7 @@ int main()
     const double dt = 1e-4;
 
     // Create the files needed for storing arrays
-    const int sample_number = 20;
+    const int sample_number = 10;
 
     // initialize initial conditions for coordinates using the thermalised state
 
@@ -106,12 +106,12 @@ int main()
     double x1_ds, x2_ds, y1_ds, y2_ds, px1_ds, px2_ds, py1_ds, py2_ds;
 
 
-    std:: fstream initial_conditions("thermalised_coordinates.txt", std:: ios:: in);
+    std:: fstream initial_conditions("C:/Users/cilli/DIAS.cpp/Run_files4.0/thermalised_coordinates.txt", std:: ios:: in);
     initial_conditions >> x1 >> x2 >> y1 >> y2 >> px1 >> px2 >> py1 >> py2;
     initial_conditions.close();
 
     double Hamiltonian;
-    std:: fstream Rhoensfile("CurrentHamiltonian1.0.txt", std:: ios :: in);
+    std:: fstream Rhoensfile("C:/Users/cilli/DIAS.cpp/Run_files4.0/CurrentHamiltonian1.0.txt", std:: ios :: in);
     Rhoensfile >> Hamiltonian;
     Rhoensfile.close();
 
@@ -176,8 +176,8 @@ int main()
         }
 
         // Create paths and output files
-        std:: string path_out = "C:/Users/cilli/DIAS.cpp/Run_files1.0/run_" + std::to_string(i+1) + ".txt";
-        std:: string path_out_ds = "C:/Users/cilli/DIAS.cpp/Run_files1.0/run_ds" + std::to_string(i+1) + ".txt";
+        std:: string path_out = "C:/Users/cilli/DIAS.cpp/Run_files4.0/run_" + std::to_string(i+1) + ".txt";
+        std:: string path_out_ds = "C:/Users/cilli/DIAS.cpp/Run_files4.0/run_ds" + std::to_string(i+1) + ".txt";
         std:: fstream file_out(path_out,std::ios::out);
         std:: fstream file_out_ds(path_out_ds,std::ios::out);
 
