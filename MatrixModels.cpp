@@ -3,25 +3,38 @@
 #include <ctime>
 #include <complex>
 
-/*
-std:: complex<double> (*(createMatrix)())[N]
+const int N = 2;
+std:: complex<double> (*(add)(std::complex<double> A[N][N],std::complex<double> B[N][N]))[N]
 {
-    std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0,1);
-    static std::complex<double> arr[N][N];
-
-    for (int i=0; i < N; i++)
+    static std::complex<double> C[N][N];
+    for (int i = 0; i < N; i++)
     {
-        for (int j=0; j < N; j++)
+        
+        for (int j = 0; j < N; j++)
         {
-            arr[i][j] = std:: complex<double> (gauss_dist(rng),gauss_dist(rng));
+            C[i][j] = A[i][j] + B[i][j];
+        }
+
+    }
+    return C;
+}
+
+std:: complex<double> (*(multiply(std::complex<double> A[N][N],std::complex<double> B[N][N])))[N]
+{
+    std:: complex<double> C[N][N] = {};
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            for (int k = 0; k < N; k++)
+            {
+                C[i][j] += A[i][k] + B[k][i];
+            }
         }
     }
-    return arr;
+    return C;
 }
-*/
 
-const int N = 2;
 std::complex<double> X1[N][N], X2[N][N], X3[N][N], X4[N][N], X5[N][N], X6[N][N], X7[N][N], X8[N][N], X9[N][N];
 int main()
 {
@@ -59,6 +72,7 @@ int main()
             X8[j][i] = std:: conj(z8);
             X9[i][j] = z9;
             X9[j][i] = std:: conj(z9);
+            // Make sure you're using the && correctly
             if (i == N - 1 && i == j)
             {
                 std:: complex<double> current_sum1(0,0);
@@ -70,7 +84,7 @@ int main()
                 std:: complex<double> current_sum7(0,0);
                 std:: complex<double> current_sum8(0,0);
                 std:: complex<double> current_sum9(0,0);
-                for (int k = 0; k < N; k++)
+                for (int k = 0; k < N - 1; k++)
                 {
                     current_sum1 += X1[k][k];
                     current_sum2 += X2[k][k];
