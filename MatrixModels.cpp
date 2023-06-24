@@ -4,6 +4,7 @@
 #include <complex>
 
 const int N = 2;
+
 std:: complex<double> (*(add)(std::complex<double> A[N][N],std::complex<double> B[N][N]))[N]
 {
     static std::complex<double> C[N][N];
@@ -19,23 +20,77 @@ std:: complex<double> (*(add)(std::complex<double> A[N][N],std::complex<double> 
     return C;
 }
 
+std:: complex<double> (*(subtract)(std::complex<double> A[N][N], std:: complex<double> B[N][N]))[N]
+{
+    static std:: complex<double> C[N][N];
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            C[i][j] = A[i][j] - B[i][j];
+        }
+    }
+    return C;
+}
+
 std:: complex<double> (*(multiply(std::complex<double> A[N][N],std::complex<double> B[N][N])))[N]
 {
-    std:: complex<double> C[N][N] = {};
+    static std:: complex<double> C[N][N] = {};
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
             for (int k = 0; k < N; k++)
             {
-                C[i][j] += A[i][k] + B[k][i];
+                C[i][j] += A[i][k] + B[k][j];
             }
         }
     }
     return C;
 }
 
+std:: complex<double> Trace(std:: complex<double> A[N][N])
+
+{
+    static std:: complex<double> C = 0;
+    for (int i = 0; i < N; i++)
+    {
+        C += A[i][i];
+    }
+    
+    return C;
+}
+
+std:: complex<double> (*(commutator)(std:: complex<double> A[N][N],std:: complex<double> B[N][N]))[N]
+{    
+    std::complex<double> (*AB)[N] = multiply(A,B);
+    std::cout << "AB:";
+    for (int i = 0; i < N; i++)
+    {
+        std:: cout << std::endl; 
+        for (int j = 0; j< N; j++)
+        {
+            std:: cout << AB[i][j] << " ";
+        }
+    }
+    std:: cout << std:: endl;
+    std::complex<double> (*BA)[N] = multiply(B,A);
+    std::cout << "BA:";
+    for (int i = 0; i < N; i++)
+    {
+        std:: cout << std::endl; 
+        for (int j = 0; j< N; j++)
+        {
+            std:: cout << BA[i][j] << " ";
+        }
+    }
+    std:: cout << std:: endl;
+    std::complex<double> (*C)[N] = subtract(AB,BA);
+    return C;
+}
+
 std::complex<double> X1[N][N], X2[N][N], X3[N][N], X4[N][N], X5[N][N], X6[N][N], X7[N][N], X8[N][N], X9[N][N];
+
 int main()
 {
     // Create the matrices
@@ -110,14 +165,17 @@ int main()
         }
     }
 
-    for (int x = 0; x < N; x++)
+    std::complex<double> X[N][N] = {1,2,3,4};
+    std::complex<double> Y[N][N] = {1,1,1,1};
+    std::complex<double> (*C)[N] = commutator(X,Y);
+    std:: cout << "Commutator:";
+    for (int i = 0; i < N; i++)
     {
-        for(int y = 0; y < N; y++)
+        std:: cout << std::endl; 
+        for (int j = 0; j< N; j++)
         {
-        std:: cout << X1[x][y] << std:: endl;
+            std:: cout << C[i][j] << " ";
         }
     }
-    
-    std:: cout << "Trace: " << X1[0][0] + X1[1][1];
     return 0;
 }
