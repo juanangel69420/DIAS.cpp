@@ -5,6 +5,7 @@
 #include <fstream>
 #include "eigen/Eigen/Dense"
 
+int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e7;
 const double dt = 1e-4;
@@ -18,7 +19,7 @@ matrix commutator(matrix A, matrix B)
     return A*B - B*A;
 } 
 
-complex H(
+double H(
     double g, 
     matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
@@ -39,7 +40,7 @@ complex H(
         }
     }
     complex U = - 1/(4*pow(g,2)) * commutator_sum.trace();
-    return T + U;
+    return std:: abs(T + U);
 }
 
 matrix F(matrix Xi, matrix Xj1, matrix Xj2, matrix Xj3, matrix Xj4, matrix Xj5, matrix Xj6, matrix Xj7, matrix Xj8)
@@ -111,11 +112,9 @@ int main()
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9;
     matrix V1, V2, V3, V4, V5, V6, V7, V8, V9;
 
-    /*Comment out for comparisons with python code
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
     std:: normal_distribution<double> gauss_dist(0,1);
-    
     
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int i = 0; i < N; i++)
@@ -149,11 +148,10 @@ int main()
             }
         }
     }
-    */
-
+/*
     X1 << 1,2,3,4; X2 << 2,3,4,5; X3 << 3,4,5,6; X4 << 4,5,6,7; X5 << 5,6,7,8; X6 << 6,7,8,9;
     X7 << 2,4,6,8; X8 << 1,3,5,7; X9 << 3,5,7,9;
-
+*/ 
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(X2,X1,X3,X4,X5,X6,X7,X8,X9);
@@ -171,7 +169,7 @@ int main()
 
     // Run update function
 
-    for (int i = 0; i < iterations; i++)
+    for (int i = 0; i < 100000; i++)
     {
         update(
             dt,
@@ -180,6 +178,16 @@ int main()
             &V1,&V2,&V3,&V4,&V5,&V6,&V7,&V8,&V9,
             &F1_0,&F2_0,&F3_0,&F4_0,&F5_0,&F6_0,&F7_0,&F8_0,&F9_0,
             &F1_n,&F2_n,&F3_n,&F4_n,&F5_n,&F6_n,&F7_n,&F8_n,&F9_n);
+        /*
+        if (i%100000 == 0){
+            std:: cout << i << std::endl;
+            std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
+            std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+        }
+        */
+        std:: cout << i << std:: endl;
+        std:: cout << "V1: " << V1 << std:: endl << "V2: " << V2 << std::endl << "V3: " << V3 << std::endl;
+        //std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
     }
 
     std:: fstream thermalised_configuration("Thermalised_branes.txt", std::ios::out);
