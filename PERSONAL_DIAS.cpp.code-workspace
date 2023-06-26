@@ -53,7 +53,8 @@
 			"typeinfo": "cpp",
 			"ctime": "cpp",
 			"iomanip": "cpp",
-			"complex": "cpp"
+			"complex": "cpp",
+			"dense": "cpp"
 		}
 	}
 }

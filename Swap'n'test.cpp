@@ -2,69 +2,64 @@
 #include <random>
 #include <ctime>
 #include <complex>
+typedef std:: complex<double> complex;
 
 const int N = 2;
 
-/*
-std::complex<double>* add(std::complex<double> A[N][N], std::complex<double> B[N][N])
-{
-    double* C[N][N];
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            *C[i][j] = A[i][j] + B[i][j];
-        }
-    }
+struct matrix{
     
-    return C;
-}
-*/
+    int rows;
+    int columns;
+    complex data[N][N];
 
-double (*(add)(double A[N][N], double B[N][N]))[N]
-{
-    static double C[N][N];
-    for (int i = 0; i < N; i++)
+    // Default constructor is a random NxN matrix
+    matrix() : rows(N), columns(N) 
     {
-        
-        for (int j = 0; j < N; j++)
-        {
-            C[i][j] = A[i][j] + B[i][j];
-        }
+        // Initialize a random number generator engine and initialize a gaussian distribution with mean 0 and std 1
+        std:: mt19937 rng(std::time(nullptr));
+        std:: normal_distribution<double> gauss_dist(0,1);
 
-    }
-    
-    return C;
-}
-
-double (*(multiply)(double A[N][N], double B[N][N]))[N]
-{
-    static double C[N][N] = {};
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
+        // Assign random complex numbers to the matrix (Ensure that the matrix is hermitian and traceless)
+        for (int i = 0; i < N; i++)
         {
-            for (int k = 0; k < N; k++)
+            for (int j = 0; j < N; j++)
             {
-                C[i][j] += (A[i][k] * B[k][j]);
+                complex z1 = complex(gauss_dist(rng),gauss_dist(rng));
+                data[i][j] = z1;
+                data[j][i] = std:: conj(z1);
+                if (i == (N-1) && j == (N-1))
+                {
+                    complex current_sum = 0;
+                    for (int k = 0; k < N-1; k++)
+                    {
+                        current_sum += data[k][k];
+                    }
+                    data[i][j] = -current_sum;
+                }
             }
         }
     }
-    return C;
-}
+};
 
 int main()
 {
-    double A[2][2] = {{20,3},{8,9}};
-    double B[2][2] = {{1,0},{0,1}};
-    double (*C)[N] = multiply(A,B);
+    matrix A;
+    matrix B;
     for (int i = 0; i < N; i++)
     {
-        std:: cout << std:: endl;
+        std:: cout << std::endl;
         for (int j = 0; j < N; j++)
         {
-            std::cout << C[i][j] << " ";
+            std:: cout << A.data[i][j];
         }
     }
-    return 0;
+    std::cout << std:: endl;
+    for (int i = 0; i < N; i++)
+    {
+        std:: cout << std::endl;
+        for (int j = 0; j < N; j++)
+        {
+            std:: cout << B.data[i][j];
+        }
+    }
 }
