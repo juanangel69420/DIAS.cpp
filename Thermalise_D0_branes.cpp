@@ -43,12 +43,19 @@ double H(
     return std:: abs(T + U);
 }
 
-matrix F(matrix Xi, matrix Xj1, matrix Xj2, matrix Xj3, matrix Xj4, matrix Xj5, matrix Xj6, matrix Xj7, matrix Xj8)
+matrix F(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7,matrix X8, matrix X9)
 {
-    matrix F = commutator(Xj1, commutator(Xi,Xj1)) + commutator(Xj2, commutator(Xi,Xj2)) + commutator(Xj3, commutator(Xi,Xj3)) +
-    commutator(Xj4, commutator(Xi,Xj4)) + commutator(Xj5, commutator(Xi,Xj5)) + commutator(Xj6, commutator(Xi,Xj6)) + 
-    commutator(Xj7, commutator(Xi,Xj7)) + commutator(Xj8, commutator(Xi,Xj8));
-    return F;
+    matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9};
+    matrix sum;
+    for (int k = 0; k < 9; k++)
+    {
+        if(i-1 == k)
+        {
+            continue;
+        }
+        sum += commutator(X[k],commutator(X[i - 1],X[k]));
+    }
+    return sum;
 }
 
 matrix gauss_law(
@@ -82,15 +89,15 @@ void update(
     *X8_n = *X8 + (*V8)*dt + 0.5*(*F8_0)*pow(dt,2);
     *X9_n = *X9 + (*V9)*dt + 0.5*(*F9_0)*pow(dt,2);
 
-    *F1_n = F(*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F2_n = F(*X2_n,*X1_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F3_n = F(*X3_n,*X1_n,*X2_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F4_n = F(*X4_n,*X1_n,*X2_n,*X3_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F5_n = F(*X5_n,*X1_n,*X2_n,*X3_n,*X4_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F6_n = F(*X6_n,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X7_n,*X8_n,*X9_n);
-    *F7_n = F(*X7_n,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X8_n,*X9_n);
-    *F8_n = F(*X8_n,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X9_n);
-    *F9_n = F(*X9_n,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n);
+    *F1_n = F(1,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F2_n = F(2,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F3_n = F(3,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F4_n = F(4,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F5_n = F(5,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F6_n = F(6,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F7_n = F(7,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F8_n = F(8,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F9_n = F(9,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
 
     *V1 = *V1 + 0.5*(*F1_0 + *F1_n)*dt;
     *V2 = *V2 + 0.5*(*F2_0 + *F2_n)*dt;
@@ -112,10 +119,11 @@ int main()
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9;
     matrix V1, V2, V3, V4, V5, V6, V7, V8, V9;
 
+
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0,1);
-    
+    std:: normal_distribution<double> gauss_dist(0,0.1);
+  
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int i = 0; i < N; i++)
     {
@@ -138,7 +146,7 @@ int main()
             if (i == N-1 && i == j)
             {
                 complex sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0, sum6 = 0, sum7 = 0, sum8 = 0, sum9 = 0;
-                for (int k = 0; k < N; k++)
+                for (int k = 0; k < N-1; k++)
                 {
                     sum1 += X1(k, k), sum2 += X2(k, k), sum3 += X3(k, k), sum4 += X4(k, k), sum5 += X5(k, k),
                     sum6 += X6(k, k), sum7 += X7(k, k), sum8 += X8(k, k), sum9 += X9(k, k);
@@ -148,27 +156,37 @@ int main()
             }
         }
     }
+
+
+    //X1 << complex(2,7), complex(9,6), complex(8,1), complex(4,3);
 /*
-    X1 << 1,2,3,4; X2 << 2,3,4,5; X3 << 3,4,5,6; X4 << 4,5,6,7; X5 << 5,6,7,8; X6 << 6,7,8,9;
-    X7 << 2,4,6,8; X8 << 1,3,5,7; X9 << 3,5,7,9;
-*/ 
+    X2 << complex(5,8), complex(8,1), complex(6,0), complex(8,4);
+    X3 << complex(6,4), complex(5,9), complex(2,2), complex(9,2);
+    X4 << complex(7,1), complex(4,4), complex(3,9), complex(6,9);
+    X5 << complex(5,2), complex(2,8), complex(4,2), complex(8,3);
+    X6 << complex(4,6), complex(5,2), complex(7,8), complex(7,1);
+    X7 << complex(3,3), complex(6,3), complex(6,4), complex(3,6);
+    X8 << complex(2,5), complex(7,9), complex(2,2), complex(2,8);
+    X9 << complex(1,6), complex(1,8), complex(5,7), complex(1,4);
+*/
+    //X2 << 2,3,4,5; X3 << 3,4,5,6; X4 << 4,5,6,7; X5 << 5,6,7,8; X6 << 6,7,8,9; X7 << 2,4,6,8; X8 << 1,3,5,7; X9 << 3,5,7,9;
+
     // Initializing F function at t = 0 for use in the update function
-    matrix F1_0 = F(X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F2_0 = F(X2,X1,X3,X4,X5,X6,X7,X8,X9);
-    matrix F3_0 = F(X3,X1,X2,X4,X5,X6,X7,X8,X9);
-    matrix F4_0 = F(X4,X1,X2,X3,X5,X6,X7,X8,X9);
-    matrix F5_0 = F(X5,X1,X2,X3,X4,X6,X7,X8,X9);
-    matrix F6_0 = F(X6,X1,X2,X3,X4,X5,X7,X8,X9);
-    matrix F7_0 = F(X7,X1,X2,X3,X4,X5,X6,X8,X9);
-    matrix F8_0 = F(X8,X1,X2,X3,X4,X5,X6,X7,X9);
-    matrix F9_0 = F(X9,X1,X2,X3,X4,X5,X6,X7,X8);
+    matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F3_0 = F(3,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F4_0 = F(4,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F5_0 = F(5,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F6_0 = F(6,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F7_0 = F(7,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F8_0 = F(8,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F9_0 = F(9,X1,X2,X3,X4,X5,X6,X7,X8,X9);
 
     // Initializing X1_n's and F1_n's to pass addresses to the update function
     matrix X1_n, X2_n, X3_n, X4_n, X5_n, X6_n, X7_n, X8_n, X9_n;
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n;
 
     // Run update function
-
     for (int i = 0; i < 100000; i++)
     {
         update(
@@ -179,15 +197,28 @@ int main()
             &F1_0,&F2_0,&F3_0,&F4_0,&F5_0,&F6_0,&F7_0,&F8_0,&F9_0,
             &F1_n,&F2_n,&F3_n,&F4_n,&F5_n,&F6_n,&F7_n,&F8_n,&F9_n);
         /*
-        if (i%100000 == 0){
+        if (i%50000 == 0)
+        {
             std:: cout << i << std::endl;
             std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
             std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
         }
         */
-        std:: cout << i << std:: endl;
-        std:: cout << "V1: " << V1 << std:: endl << "V2: " << V2 << std::endl << "V3: " << V3 << std::endl;
-        //std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+        if (i%10000 == 0)
+        {
+            matrix A, B;
+            for (int j = 0; j < 9; j++)
+            {
+                A = commutator(X1,X2*X1) + commutator(X3,X2*X3) + commutator(X4,X2*X4) + commutator(X5,X2*X5) + commutator(X6,X2*X6)
+                + commutator(X7,X2*X7) + commutator(X8,X2*X8) + commutator(X9,X2*X9);
+                B = commutator(X1,X1*X2) + commutator(X3,X3*X2) + commutator(X4,X4*X2) + commutator(X5,X5*X2) + commutator(X6,X6*X2) 
+                + commutator(X7,X7*X2) + commutator(X8,X8*X2) + commutator(X9,X9*X2);
+            }
+            std:: cout << "A: " << A << std::endl;
+            std:: cout << "B: " << B << std::endl;
+            std:: cout << "H: " << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+            std:: cout << "X1: " << X1 << std:: endl;
+        }
     }
 
     std:: fstream thermalised_configuration("Thermalised_branes.txt", std::ios::out);
