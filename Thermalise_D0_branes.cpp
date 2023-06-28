@@ -122,7 +122,7 @@ int main()
 
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0,0.1);
+    std:: normal_distribution<double> gauss_dist(0, 1);
   
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int i = 0; i < N; i++)
@@ -209,14 +209,15 @@ int main()
             matrix A, B;
             for (int j = 0; j < 9; j++)
             {
-                A = commutator(X1,X2*X1) + commutator(X3,X2*X3) + commutator(X4,X2*X4) + commutator(X5,X2*X5) + commutator(X6,X2*X6)
-                + commutator(X7,X2*X7) + commutator(X8,X2*X8) + commutator(X9,X2*X9);
-                B = commutator(X1,X1*X2) + commutator(X3,X3*X2) + commutator(X4,X4*X2) + commutator(X5,X5*X2) + commutator(X6,X6*X2) 
-                + commutator(X7,X7*X2) + commutator(X8,X8*X2) + commutator(X9,X9*X2);
+                A = commutator(X1,X3*X1) + commutator(X2,X3*X2) + commutator(X4,X3*X4) + commutator(X5,X3*X5) + commutator(X6,X3*X6)
+                + commutator(X7,X3*X7) + commutator(X8,X3*X8) + commutator(X9,X3*X9);
+                B = commutator(X1,X1*X3) + commutator(X2,X2*X3) + commutator(X4,X4*X3) + commutator(X5,X5*X3) + commutator(X6,X6*X3) 
+                + commutator(X7,X7*X3) + commutator(X8,X8*X3) + commutator(X9,X9*X3);
             }
             std:: cout << "A: " << A << std::endl;
             std:: cout << "B: " << B << std::endl;
             std:: cout << "H: " << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+            std:: cout << "F3: " << F3_0;
             std:: cout << "X1: " << X1 << std:: endl;
         }
     }
