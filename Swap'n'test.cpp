@@ -1,65 +1,51 @@
 #include <iostream>
 #include <random>
 #include <ctime>
+#include <string>
 #include <complex>
-typedef std:: complex<double> complex;
+#include <fstream>
+#include "eigen/Eigen/Dense"
 
 const int N = 2;
+typedef Eigen:: Matrix<double, N, N> matrix;
 
-struct matrix{
-    
-    int rows;
-    int columns;
-    complex data[N][N];
-
-    // Default constructor is a random NxN matrix
-    matrix() : rows(N), columns(N) 
-    {
-        // Initialize a random number generator engine and initialize a gaussian distribution with mean 0 and std 1
-        std:: mt19937 rng(std::time(nullptr));
-        std:: normal_distribution<double> gauss_dist(0,1);
-
-        // Assign random complex numbers to the matrix (Ensure that the matrix is hermitian and traceless)
-        for (int i = 0; i < N; i++)
-        {
-            for (int j = 0; j < N; j++)
-            {
-                complex z1 = complex(gauss_dist(rng),gauss_dist(rng));
-                data[i][j] = z1;
-                data[j][i] = std:: conj(z1);
-                if (i == (N-1) && j == (N-1))
-                {
-                    complex current_sum = 0;
-                    for (int k = 0; k < N-1; k++)
-                    {
-                        current_sum += data[k][k];
-                    }
-                    data[i][j] = -current_sum;
-                }
-            }
-        }
-    }
+struct strings{
+    std:: string str1;
+    std:: string str2;
 };
+
+strings split_string(std:: string x) // Adjust number of member variables in split screen according to the number of columns in the matrices
+{    
+    strings result;
+    for (int i = 0; i < x.size(); i++)
+    {
+        if (isspace(x[i]))
+            break;
+        else
+            result.str1 += x[i];
+    }
+
+    for (int i = result.str1.size() + 1; i < x.size(); i ++)
+    {
+        result.str2 += x[i];
+    }
+    return result;
+}
 
 int main()
 {
-    matrix A;
-    matrix B;
-    for (int i = 0; i < N; i++)
+    double values[18*N*N];
+
+    std:: fstream thermalised_coordinates("Thermalised_branes.txt",std:: ios:: in);
+    std:: string line;
+    int i = 0;
+    while(getline(thermalised_coordinates, line) && i < values.length())
     {
-        std:: cout << std::endl;
-        for (int j = 0; j < N; j++)
-        {
-            std:: cout << A.data[i][j];
-        }
+        strings current_strings = split_string(line);
+        double col1 = stod(current_strings.str1);
+        double col2 = stod(current_strings.str2);
+
     }
-    std::cout << std:: endl;
-    for (int i = 0; i < N; i++)
-    {
-        std:: cout << std::endl;
-        for (int j = 0; j < N; j++)
-        {
-            std:: cout << B.data[i][j];
-        }
-    }
+
+    return 0;
 }

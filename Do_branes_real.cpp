@@ -9,7 +9,7 @@ int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e7;
 const double dt = 1e-4;
-const double g = 0.1;
+const double g = 0.01;
 
 typedef Eigen:: Matrix<double, N, N> matrix;
 
@@ -121,7 +121,7 @@ int main()
 
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0, 1);
+    std:: normal_distribution<double> gauss_dist(0,0.1);
   
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int i = 0; i < N; i++)
@@ -167,7 +167,7 @@ int main()
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n;
 
     // Run update function
-    for (int i = 0; i < 1000000; i++)
+    for (int i = 0; i < iterations; i++)
     {
         update(
             dt,
@@ -177,12 +177,9 @@ int main()
             &F1_0,&F2_0,&F3_0,&F4_0,&F5_0,&F6_0,&F7_0,&F8_0,&F9_0,
             &F1_n,&F2_n,&F3_n,&F4_n,&F5_n,&F6_n,&F7_n,&F8_n,&F9_n);
         
-        if (i%50000 == 0)
+        if (i%1000000 == 0)
         {
-            std:: cout << i << std::endl;
-            std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
             std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
-            std:: cout << X1 << "\n" << V1 << "\n";
         }
     }
 

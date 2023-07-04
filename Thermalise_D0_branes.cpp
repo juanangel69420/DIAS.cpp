@@ -9,7 +9,7 @@ int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e7;
 const double dt = 1e-4;
-const double g = 1;
+const double g = 0.00001;
 
 typedef std::complex<double> complex;
 typedef Eigen:: Matrix<std::complex<double>, N, N> matrix;
@@ -25,7 +25,7 @@ double H(
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
 {
     // Compute kinetic energy T
-    complex T = 1/(2*pow(g,2)) * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
+    complex T = 0.5 * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
 
     matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
 
@@ -39,7 +39,7 @@ double H(
             commutator_sum += commutator(X[i],X[j])*commutator(X[i],X[j]); //can likely be more efficient by less function calls
         }
     }
-    complex U = - 1/(4*pow(g,2)) * commutator_sum.trace();
+    complex U = - (g*g)/(4) * commutator_sum.trace();
     return std:: abs(T + U);
 }
 
@@ -55,7 +55,7 @@ matrix F(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6
         }
         sum += commutator(X[k],commutator(X[i - 1],X[k]));
     }
-    return sum;
+    return g*g*sum;
 }
 
 matrix gauss_law(
@@ -122,7 +122,7 @@ int main()
 
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0, 1);
+    std:: normal_distribution<double> gauss_dist(0, 100);
   
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int i = 0; i < N; i++)
@@ -157,20 +157,6 @@ int main()
         }
     }
 
-
-    //X1 << complex(2,7), complex(9,6), complex(8,1), complex(4,3);
-/*
-    X2 << complex(5,8), complex(8,1), complex(6,0), complex(8,4);
-    X3 << complex(6,4), complex(5,9), complex(2,2), complex(9,2);
-    X4 << complex(7,1), complex(4,4), complex(3,9), complex(6,9);
-    X5 << complex(5,2), complex(2,8), complex(4,2), complex(8,3);
-    X6 << complex(4,6), complex(5,2), complex(7,8), complex(7,1);
-    X7 << complex(3,3), complex(6,3), complex(6,4), complex(3,6);
-    X8 << complex(2,5), complex(7,9), complex(2,2), complex(2,8);
-    X9 << complex(1,6), complex(1,8), complex(5,7), complex(1,4);
-*/
-    //X2 << 2,3,4,5; X3 << 3,4,5,6; X4 << 4,5,6,7; X5 << 5,6,7,8; X6 << 6,7,8,9; X7 << 2,4,6,8; X8 << 1,3,5,7; X9 << 3,5,7,9;
-
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
@@ -186,9 +172,8 @@ int main()
     matrix X1_n, X2_n, X3_n, X4_n, X5_n, X6_n, X7_n, X8_n, X9_n;
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n;
 
-    std:: cout << V1;
     // Run update function
-    for (int i = 0; i < 1000000; i++)
+    for (int i = 0; i < iterations; i++)
     {
         update(
             dt,
@@ -198,30 +183,12 @@ int main()
             &F1_0,&F2_0,&F3_0,&F4_0,&F5_0,&F6_0,&F7_0,&F8_0,&F9_0,
             &F1_n,&F2_n,&F3_n,&F4_n,&F5_n,&F6_n,&F7_n,&F8_n,&F9_n);
     
-        if (i%50000 == 0)
+        if (i%100000 == 0)
         {
             std:: cout << i << std::endl;
             std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
             std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
         }
-        /*
-        if (i%10000 == 0)
-        {
-            matrix A, B;
-            for (int j = 0; j < 9; j++)
-            {
-                A = commutator(X1,X3*X1) + commutator(X2,X3*X2) + commutator(X4,X3*X4) + commutator(X5,X3*X5) + commutator(X6,X3*X6)
-                + commutator(X7,X3*X7) + commutator(X8,X3*X8) + commutator(X9,X3*X9);
-                B = commutator(X1,X1*X3) + commutator(X2,X2*X3) + commutator(X4,X4*X3) + commutator(X5,X5*X3) + commutator(X6,X6*X3) 
-                + commutator(X7,X7*X3) + commutator(X8,X8*X3) + commutator(X9,X9*X3);
-            }
-            std:: cout << "A: " << A << std::endl;
-            std:: cout << "B: " << B << std::endl;
-            std:: cout << "H: " << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
-            std:: cout << "F3: " << F3_0;
-            std:: cout << "X1: " << X1 << std:: endl;
-        }
-        */
     }
 
 
