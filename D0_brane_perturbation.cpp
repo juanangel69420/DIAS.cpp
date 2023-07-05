@@ -6,18 +6,24 @@
 #include <fstream>
 #include "eigen/Eigen/Dense"
 
-int start = std::time(nullptr);
+const int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e7;
 const double dt = 1e-4;
 const double g = 0.1;
 
-typedef Eigen:: Matrix<double, N, N> matrix;
+typedef Eigen:: Matrix<std:: complex<double>, N, N> matrix;
+typedef std:: complex<double> complex;
 
 matrix commutator(matrix A, matrix B)
 {
     return A*B - B*A;
 } 
+
+matrix anticommutator(matrix A, matrix B)
+{
+    return A*B + B*A;
+}
 
 double H(
     double g, 
@@ -25,7 +31,7 @@ double H(
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
 {
     // Compute kinetic energy T
-    double T = 1/(2*pow(g,2)) * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
+    complex T = 1/(2*pow(g,2)) * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
 
     matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
 
@@ -40,8 +46,17 @@ double H(
         }
     }
     
-    double U = - 1/(4*pow(g,2)) * commutator_sum.trace();
-    return T + U;
+    complex U = - 1/(4*pow(g,2)) * commutator_sum.trace();
+    return std:: abs(T + U);
+}
+
+double deformed_energy(
+    double g,
+    matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
+    matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9
+)
+{
+    
 }
 
 matrix F(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7,matrix X8, matrix X9)
@@ -59,6 +74,10 @@ matrix F(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6
     return sum;
 }
 
+matrix DF(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9)
+{
+    
+}
 matrix gauss_law(
     matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
@@ -118,13 +137,40 @@ int main()
 {
     // Declaring the matrices
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9, V1, V2, V3, V4, V5, V6, V7, V8, V9;
+    matrix thermalised_coordinates[18] = {X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9};
+    std:: fstream thermalised_file("Thermalised_branes.txt",std:: ios::in);
+    for (int i = 0; i < 18; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            for (int k = 0; k < N; k++)
+            {
+                thermalised_file >> thermalised_coordinates[i](j,k);
+            }
+        }
+    }
 
-    std:: fstream thermalised_coordinates("Thermalised_branes.txt",std:: ios::in);
-    std:: string line;
-    getline(thermalised_coordinates, line);
-    line >> X1;
+    X1 = thermalised_coordinates[0];
+    X2 = thermalised_coordinates[1];
+    X3 = thermalised_coordinates[2];
+    X4 = thermalised_coordinates[3];
+    X5 = thermalised_coordinates[4];
+    X6 = thermalised_coordinates[5];
+    X7 = thermalised_coordinates[6];
+    X8 = thermalised_coordinates[7];
+    X9 = thermalised_coordinates[8];
     
+    V1 = thermalised_coordinates[9];
+    V2 = thermalised_coordinates[10];
+    V3 = thermalised_coordinates[11];
+    V4 = thermalised_coordinates[12];
+    V5 = thermalised_coordinates[13];
+    V6 = thermalised_coordinates[14];
+    V7 = thermalised_coordinates[15];
+    V8 = thermalised_coordinates[16];
+    V9 = thermalised_coordinates[17];
 
+    std:: cout << X1 << std:: endl << X2 << std:: endl << V1 << std:: endl << V2;
     /*
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);

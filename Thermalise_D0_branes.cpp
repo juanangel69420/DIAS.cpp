@@ -173,7 +173,7 @@ int main()
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n;
 
     // Run update function
-    for (int i = 0; i < iterations; i++)
+    for (int i = 0; i < 100; i++)
     {
         update(
             dt,
@@ -191,13 +191,22 @@ int main()
         }
     }
 
-
+    matrix coordinates[18] = {X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9};
     std:: fstream thermalised_configuration("Thermalised_branes.txt", std::ios::out);
     if (thermalised_configuration.is_open())
     {   
-        thermalised_configuration << X1 << "\n" << X2 << "\n" << X3 << "\n" << X4 <<"\n" << X5 <<"\n" << X6 << "\n" 
-        << X7 << "\n" << X8 << "\n" << X9 << "\n" << V1 << "\n" << V2 << "\n" << V3 << "\n" << V4 << "\n" << V5 << "\n" 
-        << V6 << "\n" << V7 << "\n" << V8 << "\n" << V9; 
+        for (int i = 0; i < 18; i++)
+        {
+            for (int j = 0 ; j < N; j++)
+            {
+                for (int k = 0; k < N; k++)
+                {
+                    thermalised_configuration << coordinates[i](j,k);
+                }
+                thermalised_configuration << std:: endl;
+            }
+            thermalised_configuration << std:: endl;
+        }
     }
     else{
         std:: cout << "Thermalised_branes.txt did not open correctly for writing";
