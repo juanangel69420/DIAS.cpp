@@ -7,10 +7,17 @@
 #include "eigen/Eigen/Dense"
 
 const int start = std::time(nullptr);
-const int N = 2;
-const int iterations = 1e7;
+const int N = 2; // Can vary
+const int iterations = 1e6;
 const double dt = 1e-4;
-const double g = 0.1;
+const double g = 0.000001; // Can vary
+
+// c_k coefficients for the deformed potential (Will vary from simulation to simulation due to time dependent seed)
+std:: mt19937 rng(std:: time(nullptr));
+std:: normal_distribution<double> gauss_dist(0, 1e-8);
+const double c1 = gauss_dist(rng);
+const double c2 = gauss_dist(rng);
+double coefficients[2] = {c1,c2};
 
 typedef Eigen:: Matrix<std:: complex<double>, N, N> matrix;
 typedef std:: complex<double> complex;
@@ -31,11 +38,11 @@ double H(
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
 {
     // Compute kinetic energy T
-    complex T = 1/(2*pow(g,2)) * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
+    complex T = 0.5 * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
 
     matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
 
-    matrix commutator_sum = matrix::Zero();  
+    matrix commutator_sum;  
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)
@@ -45,18 +52,8 @@ double H(
             commutator_sum += commutator(X[i],X[j])*commutator(X[i],X[j]); //can likely be more efficient by less function calls
         }
     }
-    
-    complex U = - 1/(4*pow(g,2)) * commutator_sum.trace();
+    complex U = - (g*g)/(4) * commutator_sum.trace();
     return std:: abs(T + U);
-}
-
-double deformed_energy(
-    double g,
-    matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
-    matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9
-)
-{
-    
 }
 
 matrix F(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7,matrix X8, matrix X9)
@@ -76,8 +73,27 @@ matrix F(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6
 
 matrix DF(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9)
 {
+    matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9};
+    matrix sum1, sum2;
+
+    for (int k = 0; k < 9; k++)
+    {
+        if(i-1 == k)
+        {
+            continue;
+        }
+        sum1 += commutator(X[k],commutator(X[i - 1],X[k]));
+    }
     
+    matrix product_sum;
+    for (int j = 0; j < 9; j++)
+    {
+        product_sum += X[j]*X[j];
+    }
+
+    sum2 = c1*2*X[i-1] + 2*c2*anticommutator(X[i-1],product_sum);
 }
+
 matrix gauss_law(
     matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
