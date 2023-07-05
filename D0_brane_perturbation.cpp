@@ -8,7 +8,7 @@
 
 const int start = std::time(nullptr);
 const int N = 2; // Can vary
-const int iterations = 1e6;
+const int iterations = 1e4;
 const double dt = 1e-4;
 const double g = 0.000001; // Can vary
 
@@ -32,7 +32,7 @@ matrix anticommutator(matrix A, matrix B)
     return A*B + B*A;
 }
 
-double H(
+double deformed_H(
     double g, 
     matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
@@ -43,16 +43,25 @@ double H(
     matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
 
     matrix commutator_sum;  
+    matrix perturbation_sum;
     for (int i = 0; i < 9; i++)
     {
+        perturbation_sum += X[i]*X[i]; // get the square of the coordinate matrices and sum them into perturbation_sum
         for (int j = 0; j < 9; j++)
         {
             if(i == j)
                 continue;
-            commutator_sum += commutator(X[i],X[j])*commutator(X[i],X[j]); //can likely be more efficient by less function calls
+            commutator_sum += commutator(X[i],X[j])*commutator(X[i],X[j]); //commutator of commutator for the original F 
         }
     }
-    complex U = - (g*g)/(4) * commutator_sum.trace();
+
+
+    complex U1 = - (g*g)/(4) * commutator_sum.trace();
+
+    complex U2 = - (g*g)/(2) * (c1*perturbation_sum.trace() + c2*(perturbation_sum*perturbation_sum).trace());
+
+    complex U = U1 + U2;
+
     return std:: abs(T + U);
 }
 
@@ -92,6 +101,8 @@ matrix DF(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X
     }
 
     sum2 = c1*2*X[i-1] + 2*c2*anticommutator(X[i-1],product_sum);
+
+    return g*g*(sum1 + sum2);
 }
 
 matrix gauss_law(
@@ -107,7 +118,7 @@ matrix gauss_law(
     return result;
 }
 
-void update(
+void perturb_update(
     double dt,
     matrix* X1, matrix* X2, matrix* X3, matrix* X4, matrix* X5, matrix* X6, matrix* X7, matrix* X8, matrix* X9,
     matrix* X1_n, matrix* X2_n, matrix* X3_n, matrix* X4_n, matrix* X5_n, matrix* X6_n, matrix* X7_n, matrix* X8_n, matrix* X9_n,
@@ -125,15 +136,15 @@ void update(
     *X8_n = *X8 + (*V8)*dt + 0.5*(*F8_0)*pow(dt,2);
     *X9_n = *X9 + (*V9)*dt + 0.5*(*F9_0)*pow(dt,2);
 
-    *F1_n = F(1,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F2_n = F(2,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F3_n = F(3,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F4_n = F(4,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F5_n = F(5,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F6_n = F(6,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F7_n = F(7,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F8_n = F(8,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
-    *F9_n = F(9,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F1_n = DF(1,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F2_n = DF(2,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F3_n = DF(3,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F4_n = DF(4,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F5_n = DF(5,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F6_n = DF(6,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F7_n = DF(7,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F8_n = DF(8,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
+    *F9_n = DF(9,*X1_n,*X2_n,*X3_n,*X4_n,*X5_n,*X6_n,*X7_n,*X8_n,*X9_n);
 
     *V1 = *V1 + 0.5*(*F1_0 + *F1_n)*dt;
     *V2 = *V2 + 0.5*(*F2_0 + *F2_n)*dt;
@@ -186,18 +197,16 @@ int main()
     V8 = thermalised_coordinates[16];
     V9 = thermalised_coordinates[17];
 
-    std:: cout << X1 << std:: endl << X2 << std:: endl << V1 << std:: endl << V2;
-    /*
     // Initializing F function at t = 0 for use in the update function
-    matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F3_0 = F(3,X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F4_0 = F(4,X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F5_0 = F(5,X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F6_0 = F(6,X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F7_0 = F(7,X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F8_0 = F(8,X1,X2,X3,X4,X5,X6,X7,X8,X9);
-    matrix F9_0 = F(9,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F1_0 = DF(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F2_0 = DF(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F3_0 = DF(3,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F4_0 = DF(4,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F5_0 = DF(5,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F6_0 = DF(6,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F7_0 = DF(7,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F8_0 = DF(8,X1,X2,X3,X4,X5,X6,X7,X8,X9);
+    matrix F9_0 = DF(9,X1,X2,X3,X4,X5,X6,X7,X8,X9);
 
     // Initializing X1_n's and F1_n's to pass addresses to the update function
     matrix X1_n, X2_n, X3_n, X4_n, X5_n, X6_n, X7_n, X8_n, X9_n;
@@ -206,7 +215,7 @@ int main()
     // Run update function
     for (int i = 0; i < iterations; i++)
     {
-        update(
+        perturb_update(
             dt,
             &X1,&X2,&X3,&X4,&X5,&X6,&X7,&X8,&X9,
             &X1_n,&X2_n,&X3_n,&X4_n,&X5_n,&X6_n,&X7_n,&X8_n,&X9_n,
@@ -218,10 +227,25 @@ int main()
         {
             std:: cout << i << std::endl;
             std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
-            std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
-            std:: cout << X1 << "\n" << V1 << "\n";
+            std:: cout << deformed_H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+            std:: cout << gauss_law(X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
         }
     }
-    */
+
+    std:: fstream perturbed("Perturbed_branes.txt", std:: ios:: out);
+    matrix Coordinates[18] = {X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9};
+    for (int i = 0; i < 18; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            for (int k = 0; k < N; k++)
+            {
+                perturbed << Coordinates[i](j,k);
+            }
+            perturbed << std:: endl;
+        }
+        perturbed << std:: endl;
+    }
+    perturbed.close();
     return 0;
 }
