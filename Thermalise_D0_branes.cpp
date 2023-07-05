@@ -173,7 +173,7 @@ int main()
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n;
 
     // Run update function
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < iterations; i++)
     {
         update(
             dt,
