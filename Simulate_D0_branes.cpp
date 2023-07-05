@@ -174,7 +174,7 @@ int main()
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n, F1_n_ds, F2_n_ds, F3_n_ds, F4_n_ds, F5_n_ds, F6_n_ds, F7_n_ds, F8_n_ds, F9_n_ds;
 
     // Run update function
-    for (int i = 0; i < 1e5; i++)
+    for (int i = 0; i < iterations; i++)
     {
         update(
             dt,
@@ -199,7 +199,7 @@ int main()
             
             X1_sols_ds[i/record] = X1_ds, X2_sols_ds[i/record] = X2_ds, X3_sols_ds[i/record] = X3_ds, X4_sols_ds[i/record] = X4_ds,
             X5_sols_ds[i/record] = X5_ds, X6_sols_ds[i/record] = X6_ds, X7_sols_ds[i/record] = X7_ds, X8_sols_ds[i/record] = X8_ds,
-            X9_sols_ds[i/record] = X9;
+            X9_sols_ds[i/record] = X9_ds;
 
             V1_sols[i/record] = V1, V2_sols[i/record] = V2, V3_sols[i/record] = V3, V4_sols[i/record] = V4,
             V5_sols[i/record] = V5, V6_sols[i/record] = V6, V7_sols[i/record] = V7, V8_sols[i/record] = V8,
@@ -207,10 +207,10 @@ int main()
 
             V1_sols_ds[i/record] = V1_ds, V2_sols_ds[i/record] = V2_ds, V3_sols_ds[i/record] = V3_ds, V4_sols_ds[i/record] = V4_ds,
             V5_sols_ds[i/record] = V5_ds, V6_sols_ds[i/record] = V6_ds, V7_sols_ds[i/record] = V7_ds, V8_sols_ds[i/record] = V8_ds,
-            V9_sols_ds[i/record] = V9;
+            V9_sols_ds[i/record] = V9_ds;
         }
 
-        if (i%10000 == 0)
+        if (i%50000 == 0)
         {
             std:: cout << i << std::endl;
             std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
@@ -218,5 +218,171 @@ int main()
             std:: cout << H(g,X1_ds,X2_ds,X3_ds,X4_ds,X5_ds,X6_ds,X7_ds,X8_ds,X9_ds,V1_ds,V2_ds,V3_ds,V4_ds,V5_ds,V6_ds,V7_ds,V8_ds,V9_ds) << std:: endl;
         }
     }
+    
+    // Writing to files
+    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/X_sols.txt",std:: ios:: out);
+    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/X_sols_ds.txt", std:: ios:: out);
+    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/V_sols.txt", std:: ios:: out);
+    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/V_sols_ds.txt", std:: ios:: out);
+
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X1_sols[k](i,j);
+                    X_file_ds << X1_sols_ds[k](i,j);
+                    V_file << V1_sols[k](i,j);
+                    V_file_ds << V1_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X2_sols[k](i,j);
+                    X_file_ds << X2_sols_ds[k](i,j);
+                    V_file << V2_sols[k](i,j);
+                    V_file_ds << V2_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X3_sols[k](i,j);
+                    X_file_ds << X3_sols_ds[k](i,j);
+                    V_file << V3_sols[k](i,j);
+                    V_file_ds << V3_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X4_sols[k](i,j);
+                    X_file_ds << X4_sols_ds[k](i,j);
+                    V_file << V4_sols[k](i,j);
+                    V_file_ds << V4_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X5_sols[k](i,j);
+                    X_file_ds << X5_sols_ds[k](i,j);
+                    V_file << V5_sols[k](i,j);
+                    V_file_ds << V5_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X6_sols[k](i,j);
+                    X_file_ds << X6_sols_ds[k](i,j);
+                    V_file << V6_sols[k](i,j);
+                    V_file_ds << V6_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X7_sols[k](i,j);
+                    X_file_ds << X7_sols_ds[k](i,j);
+                    V_file << V7_sols[k](i,j);
+                    V_file_ds << V7_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X8_sols[k](i,j);
+                    X_file_ds << X8_sols_ds[k](i,j);
+                    V_file << V8_sols[k](i,j);
+                    V_file_ds << V8_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    for (int k = 0; k < record; k ++)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    X_file << X9_sols[k](i,j);
+                    X_file_ds << X9_sols_ds[k](i,j);
+                    V_file << V9_sols[k](i,j);
+                    V_file_ds << V9_sols_ds[k](i,j);
+                }
+            }
+            X_file << ":";
+            X_file_ds << ":";
+            V_file << ":";
+            V_file_ds << ":";
+        }
+    
+    X_file.close();
+    X_file_ds.close();
+    V_file.close();
+    V_file_ds.close();
+    
     return 0;
 }
