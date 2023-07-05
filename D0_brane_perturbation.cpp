@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <string>
 #include <ctime>
 #include <cmath>
 #include <fstream>
@@ -118,9 +119,13 @@ int main()
     // Declaring the matrices
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9, V1, V2, V3, V4, V5, V6, V7, V8, V9;
 
-    std:: fstream thermalised_coordinates("Thermalised_branes.txt", std:: ios:: out);
-    std:: cout << thermalised_coordinates;
+    std:: fstream thermalised_coordinates("Thermalised_branes.txt",std:: ios::in);
+    std:: string line;
+    getline(thermalised_coordinates, line);
+    line >> X1;
+    
 
+    /*
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
@@ -155,17 +160,6 @@ int main()
             std:: cout << X1 << "\n" << V1 << "\n";
         }
     }
-
-    std:: fstream thermalised_configuration("Thermalised_branes.txt", std::ios::out);
-    if (thermalised_configuration.is_open())
-    {   
-        thermalised_configuration << X1 << "," << X2 << "," << X3 << "," << X4 <<"," << X5 <<"," << X6 << "," 
-        << X7 << "," << X8 << "," << X9 << "," << V1 << "," << V2 << "," << V3 << "," << V4 << "," << V5 << "," 
-        << V6 << "," << V7 << "," << V8 << "," << V9; 
-    }
-    else{
-        std:: cout << "Thermalised_branes.txt did not open correctly for writing";
-    }
-    thermalised_configuration.close();
+    */
     return 0;
 }

@@ -9,7 +9,7 @@ int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e7;
 const double dt = 1e-4;
-const double g = 0.00001;
+const double g = 0.000001;
 
 typedef std::complex<double> complex;
 typedef Eigen:: Matrix<std::complex<double>, N, N> matrix;
@@ -122,7 +122,7 @@ int main()
 
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0, 100);
+    std:: normal_distribution<double> gauss_dist(0, 300);
   
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int i = 0; i < N; i++)

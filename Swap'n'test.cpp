@@ -4,6 +4,7 @@
 #include <string>
 #include <complex>
 #include <fstream>
+#include <sstream>
 #include "eigen/Eigen/Dense"
 
 const int N = 2;
@@ -34,18 +35,25 @@ strings split_string(std:: string x) // Adjust number of member variables in spl
 
 int main()
 {
+    matrix X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9;
+    
     double values[18*N*N];
-
+    
     std:: fstream thermalised_coordinates("Thermalised_branes.txt",std:: ios:: in);
     std:: string line;
-    int i = 0;
-    while(getline(thermalised_coordinates, line) && i < values.length())
+    while(getline(thermalised_coordinates, line))
     {
+        std:: stringstream line;
+        std:: cout << line[0];
+        /*
         strings current_strings = split_string(line);
         double col1 = stod(current_strings.str1);
         double col2 = stod(current_strings.str2);
-
+        values[i] = col1;
+        i++;
+        values[i] = col2;
+        i++;
+        */
     }
-
     return 0;
 }
