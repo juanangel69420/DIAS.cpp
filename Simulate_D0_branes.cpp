@@ -9,7 +9,7 @@ int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e6;
 const double dt = 1e-4;
-const double g = 0.000001;
+const double g = 0.02;
 const int record = 1000;
 
 typedef std::complex<double> complex;
@@ -220,10 +220,10 @@ int main()
     }
     
     // Writing to files
-    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/X_sols.txt",std:: ios:: out);
-    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/X_sols_ds.txt", std:: ios:: out);
-    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/V_sols.txt", std:: ios:: out);
-    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/V_sols_ds.txt", std:: ios:: out);
+    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/Run1/X_sols.txt",std:: ios:: out);
+    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/Run1/X_sols_ds.txt", std:: ios:: out);
+    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/Run1/V_sols.txt", std:: ios:: out);
+    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/Run1/V_sols_ds.txt", std:: ios:: out);
 
     for (int k = 0; k < record; k ++)
         {

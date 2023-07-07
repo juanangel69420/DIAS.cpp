@@ -9,8 +9,7 @@ int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e7;
 const double dt = 1e-4;
-const double g = 0.05;
-const int record = 1000;
+const double g = 0.2;
 
 typedef std::complex<double> complex;
 typedef Eigen:: Matrix<std::complex<double>, N, N> matrix;
@@ -54,7 +53,7 @@ matrix F(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6
         {
             continue;
         }
-        sum += commutator(X[k],commutator(X[i - 1],X[k]));
+        sum.noalias() += commutator(X[k],commutator(X[i - 1],X[k]));
     }
     return g*g*sum;
 }
@@ -114,13 +113,6 @@ void update(
     *F1_0 = *F1_n, *F2_0 = *F2_n, *F3_0 = *F3_n, *F4_0 = *F4_n, *F5_0 = *F5_n, *F6_0 = *F6_n, *F7_0 = *F7_n, *F8_0 = *F8_n, *F9_0 = *F9_n;
 }
 
-matrix X1_sols[iterations/record], X2_sols[iterations/record], X3_sols[iterations/record], X4_sols[iterations/record],
-X5_sols[iterations/record],X6_sols[iterations/record],X7_sols[iterations/record],X8_sols[iterations/record],X9_sols[iterations/record];
-
-matrix V1_sols[iterations/record],V2_sols[iterations/record],V3_sols[iterations/record],V4_sols[iterations/record],
-V5_sols[iterations/record],V6_sols[iterations/record],V7_sols[iterations/record],V8_sols[iterations/record],V9_sols[iterations/record];
-
-
 int main()
 {
     // Declaring the matrices
@@ -130,18 +122,18 @@ int main()
 
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0, 1);
+    std:: normal_distribution<double> gauss_dist(0, 0.001);
   
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            complex z1 = complex(0,gauss_dist(rng)), z2 = complex(0,gauss_dist(rng)),
-            z3 = complex(0,0), z4 = complex(0,0),
-            z5 = complex(0,0), z6 = complex(0,0),
-            z7 = complex(0,0), z8 = complex(0,0),
-            z9 = complex(0,0);
+            complex z1 = complex(gauss_dist(rng),gauss_dist(rng)), z2 = complex(gauss_dist(rng),gauss_dist(rng)),
+            z3 = complex(gauss_dist(rng),gauss_dist(rng)), z4 = complex(gauss_dist(rng),gauss_dist(rng)),
+            z5 = complex(gauss_dist(rng),gauss_dist(rng)), z6 = complex(gauss_dist(rng),gauss_dist(rng)),
+            z7 = complex(gauss_dist(rng),gauss_dist(rng)), z8 = complex(gauss_dist(rng),gauss_dist(rng)),
+            z9 = complex(gauss_dist(rng),gauss_dist(rng));
             X1(i, j) = z1, X1(j, i) = std:: conj(z1);
             X2(i, j) = z2, X2(j, i) = std:: conj(z2);
             X3(i, j) = z3, X3(j, i) = std:: conj(z3);

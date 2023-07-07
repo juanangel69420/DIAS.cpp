@@ -10,7 +10,7 @@ const int start = std::time(nullptr);
 const int N = 2; // Can vary
 const int iterations = 1e4;
 const double dt = 1e-4;
-const double g = 0.000001; // Can vary
+const double g = 0.2; // Can vary
 
 // c_k coefficients for the deformed potential (Will vary from simulation to simulation due to time dependent seed)
 std:: mt19937 rng(std:: time(nullptr));
@@ -223,15 +223,11 @@ int main()
             &F1_0,&F2_0,&F3_0,&F4_0,&F5_0,&F6_0,&F7_0,&F8_0,&F9_0,
             &F1_n,&F2_n,&F3_n,&F4_n,&F5_n,&F6_n,&F7_n,&F8_n,&F9_n);
         
-        if (i%50000 == 0)
-        {
-            std:: cout << i << std::endl;
-            std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
-            std:: cout << deformed_H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
-            std:: cout << gauss_law(X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
-        }
+            
     }
-
+    std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
+    std:: cout << deformed_H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+    std:: cout << gauss_law(X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
     std:: fstream perturbed("Perturbed_branes.txt", std:: ios:: out);
     matrix Coordinates[18] = {X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9};
     for (int i = 0; i < 18; i++)
