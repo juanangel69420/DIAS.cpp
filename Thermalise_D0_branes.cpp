@@ -8,9 +8,9 @@
 int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e7;
-const double dt = 1e-4;
-const double g = 0.05;
 const int record = 1000;
+const double dt = 1e-4;
+const double g = 0.2;
 
 typedef std::complex<double> complex;
 typedef Eigen:: Matrix<std::complex<double>, N, N> matrix;
@@ -26,7 +26,7 @@ double H(
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
 {
     // Compute kinetic energy T
-    complex T = 0.5 * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
+    complex T = 1/(2*g*g) * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
 
     matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
 
@@ -40,7 +40,7 @@ double H(
             commutator_sum += commutator(X[i],X[j])*commutator(X[i],X[j]); //can likely be more efficient by less function calls
         }
     }
-    complex U = - (g*g)/(4) * commutator_sum.trace();
+    complex U = - (1)/(4*g*g) * commutator_sum.trace();
     return std:: abs(T + U);
 }
 
@@ -56,7 +56,7 @@ matrix F(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6
         }
         sum += commutator(X[k],commutator(X[i - 1],X[k]));
     }
-    return g*g*sum;
+    return sum;
 }
 
 matrix gauss_law(
@@ -114,43 +114,44 @@ void update(
     *F1_0 = *F1_n, *F2_0 = *F2_n, *F3_0 = *F3_n, *F4_0 = *F4_n, *F5_0 = *F5_n, *F6_0 = *F6_n, *F7_0 = *F7_n, *F8_0 = *F8_n, *F9_0 = *F9_n;
 }
 
-matrix X1_sols[iterations/record], X2_sols[iterations/record], X3_sols[iterations/record], X4_sols[iterations/record],
-X5_sols[iterations/record],X6_sols[iterations/record],X7_sols[iterations/record],X8_sols[iterations/record],X9_sols[iterations/record];
-
-matrix V1_sols[iterations/record],V2_sols[iterations/record],V3_sols[iterations/record],V4_sols[iterations/record],
-V5_sols[iterations/record],V6_sols[iterations/record],V7_sols[iterations/record],V8_sols[iterations/record],V9_sols[iterations/record];
-
-
 int main()
 {
+    std:: cout << "Slag Heaps incoming" << std:: endl;
     // Declaring the matrices
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9;
     matrix V1, V2, V3, V4, V5, V6, V7, V8, V9;
 
-
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0, 1);
+    std:: normal_distribution<double> gauss_dist(0,1);
   
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            complex z1 = complex(0,gauss_dist(rng)), z2 = complex(0,gauss_dist(rng)),
-            z3 = complex(0,0), z4 = complex(0,0),
-            z5 = complex(0,0), z6 = complex(0,0),
-            z7 = complex(0,0), z8 = complex(0,0),
-            z9 = complex(0,0);
-            X1(i, j) = z1, X1(j, i) = std:: conj(z1);
-            X2(i, j) = z2, X2(j, i) = std:: conj(z2);
-            X3(i, j) = z3, X3(j, i) = std:: conj(z3);
-            X4(i, j) = z4, X4(j, i) = std:: conj(z4);
-            X5(i, j) = z5, X5(j, i) = std:: conj(z5);
-            X6(i, j) = z6, X6(j, i) = std:: conj(z6);
-            X7(i, j) = z7, X7(j, i) = std:: conj(z7);
-            X8(i, j) = z8, X8(j, i) = std:: conj(z8);
-            X9(i, j) = z9, X9(j, i) = std:: conj(z9);
+
+            X1(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X1(j, i) = std:: conj(X1(i,j));
+            X2(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X2(j, i) = std:: conj(X2(i,j));
+            X3(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X3(j, i) = std:: conj(X3(i,j));
+            X4(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X4(j, i) = std:: conj(X4(i,j));
+            X5(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X5(j, i) = std:: conj(X5(i,j));
+            X6(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X6(j, i) = std:: conj(X6(i,j));
+            X7(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X7(j, i) = std:: conj(X7(i,j));
+            X8(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X8(j, i) = std:: conj(X8(i,j));
+            X9(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X9(j, i) = std:: conj(X9(i,j));
+            if (i == j && i != N-1)
+            {
+                X1(i,j) = complex(gauss_dist(rng),0);
+                X2(i,j) = complex(gauss_dist(rng),0);
+                X3(i,j) = complex(gauss_dist(rng),0);
+                X4(i,j) = complex(gauss_dist(rng),0);
+                X5(i,j) = complex(gauss_dist(rng),0);
+                X6(i,j) = complex(gauss_dist(rng),0);
+                X7(i,j) = complex(gauss_dist(rng),0);
+                X8(i,j) = complex(gauss_dist(rng),0);
+                X9(i,j) = complex(gauss_dist(rng),0);
+            }
             if (i == N-1 && i == j)
             {
                 complex sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0, sum6 = 0, sum7 = 0, sum8 = 0, sum9 = 0;
@@ -193,8 +194,6 @@ int main()
     
         if (i%100000 == 0)
         {
-            std:: cout << i << std::endl;
-            std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
             std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
         }
     }
