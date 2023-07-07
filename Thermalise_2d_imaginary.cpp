@@ -35,7 +35,7 @@ double H(double g, matrix X1_C, matrix X2_C, matrix V1_C, matrix V2_C)
         {
             if(i == j)
                 continue;
-            commutator_sum.noalias() += commutator(X[i],X[j])*commutator(X[i],X[j]); //can likely be more efficient by less function calls
+            commutator_sum.noalias() += commutator(X[i],X[j])*(commutator(X[i],X[j])); //can likely be more efficient by less function calls
         }
     }
     complex U = - (1)/(4*g*g) * commutator_sum.trace();
@@ -105,7 +105,13 @@ int main()
             X1_R(i,j) = complex(z1,0), X1_R(j,i) = std:: conj(X1_R(i,j));
             X2_R(i,j) = complex(z2,0), X2_R(j,i) = std:: conj(X2_R(i,j));
 
-            if (i == N-1 && i == j)
+            if (i == j && i != N-1)
+            {
+                X1_C(i,j) = complex(z1,0);
+                X2_C(i,j) = complex(z2,0);
+
+            }
+            if (i == j && i == N-1)
             {
                 complex diag_sum_1 = complex(0,0);
                 complex diag_sum_2 = complex(0,0);
@@ -135,9 +141,9 @@ int main()
     matrix F2_R_0 = F2_C(X1_R,X2_R);
     matrix X1_R_n, X2_R_n, F1_R_n, F2_R_n;
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 100000; i++)
     {
-        if(i%50 == 0){
+        if(i%10000 == 0){
             std:: cout << "X1_C: " << std:: endl << X1_C << std::endl << "X1_R: " << std:: endl << X1_R << std:: endl;
             std:: cout << "X2_C: " << std:: endl << X2_C << std::endl << "X2_R: " << std:: endl << X2_R << std:: endl; 
             std:: cout << "Complex energy: " << H(g,X1_C,X2_C,V1_C,V2_C) << std:: endl;
@@ -162,6 +168,7 @@ int main()
         */
     }
 
+    std:: cout << X1_C << std:: endl << X1_C.adjoint();
     std:: fstream X_file("C:/Users/cilli/DIAS.cpp/testing/X_file.txt",std:: ios:: out);
     std:: fstream V_file("C:/Users/cilli/DIAS.cpp/testing/V_file.txt",std:: ios:: out);
     for (int k = 0; k < iterations/record; k ++)
