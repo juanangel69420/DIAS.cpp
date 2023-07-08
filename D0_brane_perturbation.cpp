@@ -55,10 +55,9 @@ double deformed_H(
         }
     }
 
+    complex U1 = - (1)/(4*g*g) * commutator_sum.trace();
 
-    complex U1 = - (g*g)/(4) * commutator_sum.trace();
-
-    complex U2 = - (g*g)/(2) * (c1*perturbation_sum.trace() + c2*(perturbation_sum*perturbation_sum).trace());
+    complex U2 = - (c1*perturbation_sum.trace() + c2*(perturbation_sum*perturbation_sum).trace());
 
     complex U = U1 + U2;
 
@@ -102,7 +101,7 @@ matrix DF(int i, matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X
 
     sum2 = c1*2*X[i-1] + 2*c2*anticommutator(X[i-1],product_sum);
 
-    return g*g*(sum1 + sum2);
+    return (sum1 + sum2);
 }
 
 matrix gauss_law(
