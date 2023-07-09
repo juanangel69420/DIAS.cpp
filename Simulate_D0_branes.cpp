@@ -9,7 +9,6 @@ int start = std::time(nullptr);
 const int N = 2;
 const int iterations = 1e6;
 const double dt = 1e-4;
-const double g = 0.2;
 const int perturb_iterations = 1e4; 
 const int record = 1000;
 
@@ -201,13 +200,16 @@ void perturb_update(
 
 int main()
 {
-    // Declaring the matrices
+    // Declaring the matrices. g, and energy.
+    double g;
+    double Energy;
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9, X1_ds, X2_ds, X3_ds, X4_ds, X5_ds, X6_ds, X7_ds, X8_ds, X9_ds;
     matrix V1, V2, V3, V4, V5, V6, V7, V8, V9, V1_ds, V2_ds, V3_ds, V4_ds, V5_ds, V6_ds, V7_ds, V8_ds, V9_ds;
 
     // Loading Unperturbed and perturbed coordinates
     matrix X[18];
-    std:: fstream thermalised_coordinates("Thermalised_branes.txt", std:: ios:: in);
+    std:: fstream thermalised_coordinates("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_5x5.txt", std:: ios:: in);
+    thermalised_coordinates >> g;
     for (int i = 0; i < 18; i++)
     {
         for (int k = 0; k < N; k++)
@@ -218,12 +220,14 @@ int main()
             }
         }
     }
+    thermalised_coordinates >> Energy;
+    thermalised_coordinates.close();
 
     X1 = X[0], X2 = X[1], X3 = X[2], X4 = X[3], X5 = X[4], X6 = X[5], X7 = X[6], X8 = X[7], X9 = X[8];
     V1 = X[9], V2 = X[10], V3 = X[11], V4 = X[12], V5 = X[13], V6 = X[14], V7 = X[15], V8 = X[16], V9 = X[17];
     X1_ds = X1, X2_ds = X2, X3_ds = X3, X4_ds = X4, X5_ds = X5, X6_ds = X6, X7_ds = X7, X8_ds = X8, X9_ds = X9;
     V1_ds = V1, V2_ds = V2, V3_ds = V3, V4_ds = V4, V5_ds = V5, V6_ds = V6, V7_ds = V7, V8_ds = V8, V9_ds = V9;
-
+    std:: cout << Energy;
     /*
     std:: cout << "X1: " << X1 << std:: endl << "X1_ds: " << X1_ds << std:: endl << "X2: " << X2 << std:: endl << "X2_ds: " << X2_ds <<std:: endl;
     std:: cout << "X3: " << X3 << std:: endl << "X3_ds: " << X3_ds << std:: endl << "X4: " << X4 << std:: endl << "X4_ds: " << X4_ds <<std:: endl;
@@ -231,6 +235,7 @@ int main()
     std:: cout << "X7: " << X7 << std:: endl << "X7_ds: " << X7_ds << std:: endl << "X8: " << X8 << std:: endl << "X8_ds: " << X8_ds <<std:: endl;
     std:: cout << "X9: " << X9 << std:: endl << "X9_ds: " << X9_ds << std:: endl;
     */
+
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
@@ -350,11 +355,12 @@ int main()
         }
     }
     
+    
     // Writing to files
-    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_18205.1/X_sols.txt",std:: ios:: out);
-    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_18205.1/X_sols_ds.txt", std:: ios:: out);
-    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_18205.1/V_sols.txt", std:: ios:: out);
-    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_18205.1/V_sols_ds.txt", std:: ios:: out);
+    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_636.418/X_sols.txt",std:: ios:: out);
+    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_636.418/X_sols_ds.txt", std:: ios:: out);
+    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_636.418/V_sols.txt", std:: ios:: out);
+    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_636.418/V_sols_ds.txt", std:: ios:: out);
 
     for (int k = 0; k < record; k ++)
         {

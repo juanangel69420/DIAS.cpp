@@ -10,7 +10,7 @@ const int N = 2;
 const int iterations = 1e7;
 const int record = 1000;
 const double dt = 1e-4;
-const double g = 0.2;
+// const double g = 0.2;
 
 typedef std::complex<double> complex;
 typedef Eigen:: Matrix<std::complex<double>, N, N> matrix;
@@ -130,7 +130,6 @@ int main()
     {
         for (int j = 0; j < N; j++)
         {
-
             X1(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X1(j, i) = std:: conj(X1(i,j));
             X2(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X2(j, i) = std:: conj(X2(i,j));
             X3(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X3(j, i) = std:: conj(X3(i,j));
@@ -165,7 +164,20 @@ int main()
             }
         }
     }
-
+    matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
+    matrix E_term;
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            if(i == j)
+                continue;
+            E_term += commutator(X[i],X[j])*commutator(X[i],X[j]); //can likely be more efficient by less function calls
+        }
+    }
+    double U = -(1/4) * std::abs(E_term.trace());
+    const double g = 1/(pow(N*(6*(N*N - 1) - 27), 1/4)) * pow(U,1/4);
+    std:: cout << g;
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
@@ -181,6 +193,7 @@ int main()
     matrix X1_n, X2_n, X3_n, X4_n, X5_n, X6_n, X7_n, X8_n, X9_n;
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n;
 
+    double Energy = H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9);
     // Run update function
     for (int i = 0; i < iterations; i++)
     {
@@ -192,16 +205,19 @@ int main()
             &F1_0,&F2_0,&F3_0,&F4_0,&F5_0,&F6_0,&F7_0,&F8_0,&F9_0,
             &F1_n,&F2_n,&F3_n,&F4_n,&F5_n,&F6_n,&F7_n,&F8_n,&F9_n);
     
-        if (i%100000 == 0)
+        if (i%50000 == 0)
         {
+            double temp_i = i;
+            std:: cout << temp_i/iterations * 100 << "% " <<std:: endl;
             std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
         }
     }
 
     matrix coordinates[18] = {X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9};
-    std:: fstream thermalised_configuration("Thermalised_branes.txt", std::ios::out);
+    std:: fstream thermalised_configuration("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_2x2.txt", std::ios::out);
     if (thermalised_configuration.is_open())
     {   
+        thermalised_configuration << g << std:: endl;
         for (int i = 0; i < 18; i++)
         {
             for (int j = 0 ; j < N; j++)
@@ -218,6 +234,8 @@ int main()
     else{
         std:: cout << "Thermalised_branes.txt did not open correctly for writing";
     }
+    thermalised_configuration << Energy << std::endl;
     thermalised_configuration.close();
+    std:: cout << std::time(nullptr) - start;
     return 0;
 }

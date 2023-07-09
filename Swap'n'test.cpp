@@ -13,12 +13,7 @@ typedef std:: complex<double> complex;
 
 int main()
 {
-    matrix X1,X2;
-    X1 << complex(1,3), complex(3,3), complex(1,9), complex (9,1);
-    X2 << complex(5,4), complex(2,1), complex(8,5), complex (5,8);
-    matrix X[2] = {X1,X2};
-    std:: cout << X[0] <<std:: endl << X[1] << std:: endl;
-    X1(1,1) = 1000;
-    std::cout <<std:: endl<< "New X1: " << X1 << std:: endl; 
-    return 0;
+    double x1 = 100;
+    double x2 = 200;
+    std:: cout << x1/x2;
 }
