@@ -32,13 +32,37 @@ matrix anticommutator(matrix A, matrix B)
     return A*B + B*A;
 }
 
+double H(
+    double g, 
+    matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
+    matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
+{
+    // Compute kinetic energy T
+    complex T = 1/(2*g*g) * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
+
+    matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
+
+    matrix commutator_sum;  
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            if(i == j)
+                continue;
+            commutator_sum += commutator(X[i],X[j])*commutator(X[i],X[j]); //can likely be more efficient by less function calls
+        }
+    }
+    complex U = - (1)/(4*g*g) * commutator_sum.trace();
+    return std:: abs(T + U);
+}
+
 double deformed_H(
     double g, 
     matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
 {
     // Compute kinetic energy T
-    complex T = 0.5 * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
+    complex T = (1)/(2*g*g) * (V1*V1 + V2*V2 + V3*V3 + V4*V4 + V5*V5 + V6*V6 + V7*V7 + V8*V8 + V9*V9).trace();
 
     matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
 
@@ -54,13 +78,9 @@ double deformed_H(
             commutator_sum += commutator(X[i],X[j])*commutator(X[i],X[j]); //commutator of commutator for the original F 
         }
     }
-
     complex U1 = - (1)/(4*g*g) * commutator_sum.trace();
-
-    complex U2 = - (c1*perturbation_sum.trace() + c2*(perturbation_sum*perturbation_sum).trace());
-
+    complex U2 = - (1)/(2*g*g) * (c1*perturbation_sum.trace() + c2*(perturbation_sum*perturbation_sum).trace());
     complex U = U1 + U2;
-
     return std:: abs(T + U);
 }
 
@@ -214,6 +234,9 @@ int main()
     // Run update function
     for (int i = 0; i < iterations; i++)
     {
+        std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+        std:: cout << deformed_H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+
         perturb_update(
             dt,
             &X1,&X2,&X3,&X4,&X5,&X6,&X7,&X8,&X9,
@@ -224,7 +247,6 @@ int main()
         
             
     }
-    std:: cout << "time: " << std::time(nullptr) - start << std:: endl;
     std:: cout << deformed_H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
     std:: cout << gauss_law(X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
     std:: fstream perturbed("Perturbed_branes.txt", std:: ios:: out);
