@@ -6,20 +6,20 @@
 #include "eigen/Eigen/Dense"
 
 int start = std::time(nullptr);
-const int N = 2;
-const int iterations = 1e6;
-const double dt = 1e-4;
+const int N = 6;
+const int iterations = 2e6;
+const long double dt = 1e-4;
 const int perturb_iterations = 1e4; 
 const int record = 1000;
 
-typedef std::complex<double> complex;
-typedef Eigen:: Matrix<std::complex<double>, N, N> matrix;
+typedef std::complex<long double> complex;
+typedef Eigen:: Matrix<std::complex<long double>, N, N> matrix;
 
 std:: mt19937 rng(std:: time(nullptr));
-std:: normal_distribution<double> coeff_dist(0, 1e-8);
-const double c1 = coeff_dist(rng);
-const double c2 = coeff_dist(rng);
-double coefficients[2] = {c1,c2};
+std:: normal_distribution<long double> coeff_dist(0, 1e-8);
+const long double c1 = coeff_dist(rng);
+const long double c2 = coeff_dist(rng);
+long double coefficients[2] = {c1,c2};
 
 matrix commutator(matrix A, matrix B)
 {
@@ -31,8 +31,8 @@ matrix anticommutator(matrix A, matrix B)
     return A*B + B*A;
 }
 
-double H(
-    double g, 
+long double H(
+    long double g, 
     matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
 {
@@ -109,7 +109,7 @@ matrix gauss_law(
 }
 
 void update(
-    double dt,
+    long double dt,
     matrix* X1, matrix* X2, matrix* X3, matrix* X4, matrix* X5, matrix* X6, matrix* X7, matrix* X8, matrix* X9,
     matrix* X1_n, matrix* X2_n, matrix* X3_n, matrix* X4_n, matrix* X5_n, matrix* X6_n, matrix* X7_n, matrix* X8_n, matrix* X9_n,
     matrix* V1, matrix* V2, matrix* V3, matrix* V4, matrix* V5, matrix* V6, matrix* V7, matrix* V8, matrix* V9,
@@ -151,7 +151,7 @@ void update(
 }
 
 void perturb_update(
-    double dt,
+    long double dt,
     matrix* X1, matrix* X2, matrix* X3, matrix* X4, matrix* X5, matrix* X6, matrix* X7, matrix* X8, matrix* X9,
     matrix* X1_n, matrix* X2_n, matrix* X3_n, matrix* X4_n, matrix* X5_n, matrix* X6_n, matrix* X7_n, matrix* X8_n, matrix* X9_n,
     matrix* V1, matrix* V2, matrix* V3, matrix* V4, matrix* V5, matrix* V6, matrix* V7, matrix* V8, matrix* V9,
@@ -193,22 +193,27 @@ void perturb_update(
 }
 
 // Declare solution arrays
-    matrix X1_sols[record],X2_sols[record],X3_sols[record],X4_sols[record],X5_sols[record],X6_sols[record],X7_sols[record],X8_sols[record],X9_sols[record];
-    matrix V1_sols[record],V2_sols[record],V3_sols[record],V4_sols[record],V5_sols[record],V6_sols[record],V7_sols[record],V8_sols[record],V9_sols[record];
-    matrix X1_sols_ds[record],X2_sols_ds[record],X3_sols_ds[record],X4_sols_ds[record],X5_sols_ds[record],X6_sols_ds[record],X7_sols_ds[record],X8_sols_ds[record],X9_sols_ds[record];
-    matrix V1_sols_ds[record],V2_sols_ds[record],V3_sols_ds[record],V4_sols_ds[record],V5_sols_ds[record],V6_sols_ds[record],V7_sols_ds[record],V8_sols_ds[record],V9_sols_ds[record];
+    matrix X1_sols[iterations/record],X2_sols[iterations/record],X3_sols[iterations/record],X4_sols[iterations/record];
+    matrix X5_sols[iterations/record],X6_sols[iterations/record],X7_sols[iterations/record],X8_sols[iterations/record],X9_sols[iterations/record];
+    matrix V1_sols[iterations/record],V2_sols[iterations/record],V3_sols[iterations/record],V4_sols[iterations/record];
+    matrix V5_sols[iterations/record],V6_sols[iterations/record],V7_sols[iterations/record],V8_sols[iterations/record],V9_sols[iterations/record];
+    matrix X1_sols_ds[iterations/record],X2_sols_ds[iterations/record],X3_sols_ds[iterations/record],X4_sols_ds[iterations/record];
+    matrix X5_sols_ds[iterations/record],X6_sols_ds[iterations/record],X7_sols_ds[iterations/record],X8_sols_ds[iterations/record],X9_sols_ds[iterations/record];
+    matrix V1_sols_ds[iterations/record],V2_sols_ds[iterations/record],V3_sols_ds[iterations/record],V4_sols_ds[iterations/record];
+    matrix V5_sols_ds[iterations/record],V6_sols_ds[iterations/record],V7_sols_ds[iterations/record],V8_sols_ds[iterations/record],V9_sols_ds[iterations/record];
 
 int main()
 {
     // Declaring the matrices. g, and energy.
-    double g;
-    double Energy;
+    long double g;
+    long double Energy;
+    std:: cout << g << std:: endl << Energy << std:: endl;
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9, X1_ds, X2_ds, X3_ds, X4_ds, X5_ds, X6_ds, X7_ds, X8_ds, X9_ds;
     matrix V1, V2, V3, V4, V5, V6, V7, V8, V9, V1_ds, V2_ds, V3_ds, V4_ds, V5_ds, V6_ds, V7_ds, V8_ds, V9_ds;
 
     // Loading Unperturbed and perturbed coordinates
     matrix X[18];
-    std:: fstream thermalised_coordinates("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_5x5.txt", std:: ios:: in);
+    std:: fstream thermalised_coordinates("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_6x6.txt", std:: ios:: in);
     thermalised_coordinates >> g;
     for (int i = 0; i < 18; i++)
     {
@@ -227,7 +232,10 @@ int main()
     V1 = X[9], V2 = X[10], V3 = X[11], V4 = X[12], V5 = X[13], V6 = X[14], V7 = X[15], V8 = X[16], V9 = X[17];
     X1_ds = X1, X2_ds = X2, X3_ds = X3, X4_ds = X4, X5_ds = X5, X6_ds = X6, X7_ds = X7, X8_ds = X8, X9_ds = X9;
     V1_ds = V1, V2_ds = V2, V3_ds = V3, V4_ds = V4, V5_ds = V5, V6_ds = V6, V7_ds = V7, V8_ds = V8, V9_ds = V9;
-    std:: cout << Energy;
+
+    std:: cout << g << std:: endl;
+    std:: cout << Energy << std::endl;
+
     /*
     std:: cout << "X1: " << X1 << std:: endl << "X1_ds: " << X1_ds << std:: endl << "X2: " << X2 << std:: endl << "X2_ds: " << X2_ds <<std:: endl;
     std:: cout << "X3: " << X3 << std:: endl << "X3_ds: " << X3_ds << std:: endl << "X4: " << X4 << std:: endl << "X4_ds: " << X4_ds <<std:: endl;
@@ -235,7 +243,7 @@ int main()
     std:: cout << "X7: " << X7 << std:: endl << "X7_ds: " << X7_ds << std:: endl << "X8: " << X8 << std:: endl << "X8_ds: " << X8_ds <<std:: endl;
     std:: cout << "X9: " << X9 << std:: endl << "X9_ds: " << X9_ds << std:: endl;
     */
-
+    
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
@@ -330,6 +338,7 @@ int main()
 
         if (i % record == 0)
         {
+            
             X1_sols[i/record] = X1, X2_sols[i/record] = X2, X3_sols[i/record] = X3, X4_sols[i/record] = X4, 
             X5_sols[i/record] = X5, X6_sols[i/record] = X6, X7_sols[i/record] = X7, X8_sols[i/record] = X8, X9_sols[i/record] = X9;
             
@@ -355,14 +364,13 @@ int main()
         }
     }
     
-    
     // Writing to files
-    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_636.418/X_sols.txt",std:: ios:: out);
-    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_636.418/X_sols_ds.txt", std:: ios:: out);
-    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_636.418/V_sols.txt", std:: ios:: out);
-    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/2x2/E_636.418/V_sols_ds.txt", std:: ios:: out);
+    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/X_sols.txt",std:: ios:: out);
+    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/X_sols_ds.txt", std:: ios:: out);
+    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/V_sols.txt", std:: ios:: out);
+    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/V_sols_ds.txt", std:: ios:: out);
 
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -379,7 +387,7 @@ int main()
             V_file << ":";
             V_file_ds << ":";
         }
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -396,7 +404,7 @@ int main()
             V_file << ":";
             V_file_ds << ":";
         }
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -413,7 +421,7 @@ int main()
             V_file << ":";
             V_file_ds << ":";
         }
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -430,7 +438,7 @@ int main()
             V_file << ":";
             V_file_ds << ":";
         }
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -447,7 +455,7 @@ int main()
             V_file << ":";
             V_file_ds << ":";
         }
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -464,7 +472,7 @@ int main()
             V_file << ":";
             V_file_ds << ":";
         }
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -481,7 +489,7 @@ int main()
             V_file << ":";
             V_file_ds << ":";
         }
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -498,7 +506,7 @@ int main()
             V_file << ":";
             V_file_ds << ":";
         }
-    for (int k = 0; k < record; k ++)
+    for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
             {

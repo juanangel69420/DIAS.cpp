@@ -6,22 +6,22 @@
 #include "eigen/Eigen/Dense"
 
 int start = std::time(nullptr);
-const int N = 2;
-const int iterations = 1e7;
+const int N = 8;
+const int iterations = 5e6;
 const int record = 1000;
-const double dt = 1e-4;
-// const double g = 0.2;
+const long double dt = 1e-4;
+const long double g = 1/sqrt(8);
 
-typedef std::complex<double> complex;
-typedef Eigen:: Matrix<std::complex<double>, N, N> matrix;
+typedef std::complex<long double> complex;
+typedef Eigen:: Matrix<std::complex<long double>, N, N> matrix;
 
 matrix commutator(matrix A, matrix B)
 {
     return A*B - B*A;
 } 
 
-double H(
-    double g, 
+long double H(
+    long double g, 
     matrix X1, matrix X2, matrix X3, matrix X4, matrix X5, matrix X6, matrix X7, matrix X8, matrix X9,
     matrix V1, matrix V2, matrix V3, matrix V4, matrix V5, matrix V6, matrix V7, matrix V8, matrix V9)
 {
@@ -73,7 +73,7 @@ matrix gauss_law(
 }
 
 void update(
-    double dt,
+    long double dt,
     matrix* X1, matrix* X2, matrix* X3, matrix* X4, matrix* X5, matrix* X6, matrix* X7, matrix* X8, matrix* X9,
     matrix* X1_n, matrix* X2_n, matrix* X3_n, matrix* X4_n, matrix* X5_n, matrix* X6_n, matrix* X7_n, matrix* X8_n, matrix* X9_n,
     matrix* V1, matrix* V2, matrix* V3, matrix* V4, matrix* V5, matrix* V6, matrix* V7, matrix* V8, matrix* V9,
@@ -116,68 +116,62 @@ void update(
 
 int main()
 {
-    std:: cout << "Slag Heaps incoming" << std:: endl;
+
     // Declaring the matrices
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9;
     matrix V1, V2, V3, V4, V5, V6, V7, V8, V9;
-
+    long double Energy;
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<double> gauss_dist(0,1);
-  
+    std:: normal_distribution<long double> gauss_dist(0,0.15);
+
     //Filling the matrices with random elements (ensuring hermitian and traceless)
-    for (int i = 0; i < N; i++)
+    for (int s = 0; s<10000000; s++)
     {
-        for (int j = 0; j < N; j++)
+        for (int i = 0; i < N; i++)
         {
-            X1(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X1(j, i) = std:: conj(X1(i,j));
-            X2(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X2(j, i) = std:: conj(X2(i,j));
-            X3(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X3(j, i) = std:: conj(X3(i,j));
-            X4(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X4(j, i) = std:: conj(X4(i,j));
-            X5(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X5(j, i) = std:: conj(X5(i,j));
-            X6(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X6(j, i) = std:: conj(X6(i,j));
-            X7(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X7(j, i) = std:: conj(X7(i,j));
-            X8(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X8(j, i) = std:: conj(X8(i,j));
-            X9(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X9(j, i) = std:: conj(X9(i,j));
-            if (i == j && i != N-1)
+            for (int j = 0; j < N; j++)
             {
-                X1(i,j) = complex(gauss_dist(rng),0);
-                X2(i,j) = complex(gauss_dist(rng),0);
-                X3(i,j) = complex(gauss_dist(rng),0);
-                X4(i,j) = complex(gauss_dist(rng),0);
-                X5(i,j) = complex(gauss_dist(rng),0);
-                X6(i,j) = complex(gauss_dist(rng),0);
-                X7(i,j) = complex(gauss_dist(rng),0);
-                X8(i,j) = complex(gauss_dist(rng),0);
-                X9(i,j) = complex(gauss_dist(rng),0);
-            }
-            if (i == N-1 && i == j)
-            {
-                complex sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0, sum6 = 0, sum7 = 0, sum8 = 0, sum9 = 0;
-                for (int k = 0; k < N-1; k++)
+                X1(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X1(j, i) = std:: conj(X1(i,j));
+                X2(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X2(j, i) = std:: conj(X2(i,j));
+                X3(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X3(j, i) = std:: conj(X3(i,j));
+                X4(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X4(j, i) = std:: conj(X4(i,j));
+                X5(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X5(j, i) = std:: conj(X5(i,j));
+                X6(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X6(j, i) = std:: conj(X6(i,j));
+                X7(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X7(j, i) = std:: conj(X7(i,j));
+                X8(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X8(j, i) = std:: conj(X8(i,j));
+                X9(i, j) = complex(gauss_dist(rng),gauss_dist(rng)), X9(j, i) = std:: conj(X9(i,j));
+                if (i == j && i != N-1)
                 {
-                    sum1 += X1(k, k), sum2 += X2(k, k), sum3 += X3(k, k), sum4 += X4(k, k), sum5 += X5(k, k),
-                    sum6 += X6(k, k), sum7 += X7(k, k), sum8 += X8(k, k), sum9 += X9(k, k);
+                    X1(i,j) = complex(gauss_dist(rng),0);
+                    X2(i,j) = complex(gauss_dist(rng),0);
+                    X3(i,j) = complex(gauss_dist(rng),0);
+                    X4(i,j) = complex(gauss_dist(rng),0);
+                    X5(i,j) = complex(gauss_dist(rng),0);
+                    X6(i,j) = complex(gauss_dist(rng),0);
+                    X7(i,j) = complex(gauss_dist(rng),0);
+                    X8(i,j) = complex(gauss_dist(rng),0);
+                    X9(i,j) = complex(gauss_dist(rng),0);
                 }
-                X1(i, j) = -sum1, X2(i, j) = -sum2, X3(i, j) = -sum3, X4(i, j) = -sum4, X5(i, j) = -sum5,
-                X6(i, j) = -sum6, X7(i, j) = -sum7, X8(i, j) = -sum8, X9(i, j) = -sum9;
+                if (i == N-1 && i == j)
+                {
+                    complex sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0, sum6 = 0, sum7 = 0, sum8 = 0, sum9 = 0;
+                    for (int k = 0; k < N-1; k++)
+                    {
+                        sum1 += X1(k, k), sum2 += X2(k, k), sum3 += X3(k, k), sum4 += X4(k, k), sum5 += X5(k, k),
+                        sum6 += X6(k, k), sum7 += X7(k, k), sum8 += X8(k, k), sum9 += X9(k, k);
+                    }
+                    X1(i, j) = -sum1, X2(i, j) = -sum2, X3(i, j) = -sum3, X4(i, j) = -sum4, X5(i, j) = -sum5,
+                    X6(i, j) = -sum6, X7(i, j) = -sum7, X8(i, j) = -sum8, X9(i, j) = -sum9;
+                }
             }
         }
-    }
-    matrix X[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
-    matrix E_term;
-    for (int i = 0; i < 9; i++)
-    {
-        for (int j = 0; j < 9; j++)
-        {
-            if(i == j)
-                continue;
-            E_term += commutator(X[i],X[j])*commutator(X[i],X[j]); //can likely be more efficient by less function calls
+        Energy = H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9);
+        //std:: cout << Energy << std:: endl;
+        if (std::abs(Energy - 351) < 0.1){
+            break;
         }
     }
-    double U = -(1/4) * std::abs(E_term.trace());
-    const double g = 1/(pow(N*(6*(N*N - 1) - 27), 1/4)) * pow(U,1/4);
-    std:: cout << g;
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
@@ -193,7 +187,6 @@ int main()
     matrix X1_n, X2_n, X3_n, X4_n, X5_n, X6_n, X7_n, X8_n, X9_n;
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n;
 
-    double Energy = H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9);
     // Run update function
     for (int i = 0; i < iterations; i++)
     {
@@ -205,16 +198,18 @@ int main()
             &F1_0,&F2_0,&F3_0,&F4_0,&F5_0,&F6_0,&F7_0,&F8_0,&F9_0,
             &F1_n,&F2_n,&F3_n,&F4_n,&F5_n,&F6_n,&F7_n,&F8_n,&F9_n);
     
-        if (i%50000 == 0)
+        if (i%100000 == 0)
         {
-            double temp_i = i;
+            std:: cout << X1.trace() << std::endl;
+            long double temp_i = i;
             std:: cout << temp_i/iterations * 100 << "% " <<std:: endl;
             std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
+            std:: cout << std::time(nullptr) - start << " seconds" << std::endl;
         }
     }
 
     matrix coordinates[18] = {X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9};
-    std:: fstream thermalised_configuration("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_2x2.txt", std::ios::out);
+    std:: fstream thermalised_configuration("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_8x8.txt", std::ios::out);
     if (thermalised_configuration.is_open())
     {   
         thermalised_configuration << g << std:: endl;
