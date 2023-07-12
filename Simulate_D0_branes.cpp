@@ -6,7 +6,7 @@
 #include "eigen/Eigen/Dense"
 
 int start = std::time(nullptr);
-const int N = 6;
+const int N = 8;
 const int iterations = 2e6;
 const long double dt = 1e-4;
 const int perturb_iterations = 1e4; 
@@ -213,7 +213,7 @@ int main()
 
     // Loading Unperturbed and perturbed coordinates
     matrix X[18];
-    std:: fstream thermalised_coordinates("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_6x6.txt", std:: ios:: in);
+    std:: fstream thermalised_coordinates("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_8x8.txt", std:: ios:: in);
     thermalised_coordinates >> g;
     for (int i = 0; i < 18; i++)
     {
@@ -365,10 +365,10 @@ int main()
     }
     
     // Writing to files
-    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/X_sols.txt",std:: ios:: out);
-    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/X_sols_ds.txt", std:: ios:: out);
-    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/V_sols.txt", std:: ios:: out);
-    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/V_sols_ds.txt", std:: ios:: out);
+    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/8x8/E_351/X_sols.txt",std:: ios:: out);
+    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/8x8/E_351/X_sols_ds.txt", std:: ios:: out);
+    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/8x8/E_351/V_sols.txt", std:: ios:: out);
+    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/8x8/E_351/V_sols_ds.txt", std:: ios:: out);
 
     for (int k = 0; k < iterations/record; k ++)
         {
