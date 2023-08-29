@@ -13,7 +13,9 @@ typedef std:: complex<double> complex;
 
 int main()
 {
-    double x1 = 100;
-    double x2 = 200;
-    std:: cout << x1/x2;
+    matrix x1, x2;
+    x1 << 1,2,3,4;
+    x2 << 1,1,1,1;
+    std::cout << x1 + complex(0,1)*x2;
+    return 0;
 }

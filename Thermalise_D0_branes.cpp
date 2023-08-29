@@ -6,11 +6,11 @@
 #include "eigen/Eigen/Dense"
 
 int start = std::time(nullptr);
-const int N = 8;
-const int iterations = 5e6;
-const int record = 1000;
-const long double dt = 1e-4;
-const long double g = 1/sqrt(8);
+const int N = 6;
+const int iterations = 3e6;
+const int record = 100;
+const long double dt = 1e-3;
+const long double g = 1/sqrt(6);
 
 typedef std::complex<long double> complex;
 typedef Eigen:: Matrix<std::complex<long double>, N, N> matrix;
@@ -123,7 +123,7 @@ int main()
     long double Energy;
     // Initialize the random number generator engine and the normal distribution
     std:: mt19937 rng(std::time(nullptr));
-    std:: normal_distribution<long double> gauss_dist(0,0.15);
+    std:: normal_distribution<long double> gauss_dist(0, 0.18);
 
     //Filling the matrices with random elements (ensuring hermitian and traceless)
     for (int s = 0; s<10000000; s++)
@@ -167,11 +167,14 @@ int main()
             }
         }
         Energy = H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9);
-        //std:: cout << Energy << std:: endl;
-        if (std::abs(Energy - 351) < 0.1){
+        std:: cout << Energy << std:: endl;
+        if (std::abs(Energy - 183) < 0.1){
             break;
         }
     }
+
+    //std:: cout << X1 << std:: endl;
+
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
@@ -186,7 +189,7 @@ int main()
     // Initializing X1_n's and F1_n's to pass addresses to the update function
     matrix X1_n, X2_n, X3_n, X4_n, X5_n, X6_n, X7_n, X8_n, X9_n;
     matrix F1_n, F2_n, F3_n, F4_n, F5_n, F6_n, F7_n, F8_n, F9_n;
-
+    std:: cout << X1.trace() << std::endl;
     // Run update function
     for (int i = 0; i < iterations; i++)
     {
@@ -198,7 +201,7 @@ int main()
             &F1_0,&F2_0,&F3_0,&F4_0,&F5_0,&F6_0,&F7_0,&F8_0,&F9_0,
             &F1_n,&F2_n,&F3_n,&F4_n,&F5_n,&F6_n,&F7_n,&F8_n,&F9_n);
     
-        if (i%100000 == 0)
+        if (i%10000 == 0)
         {
             std:: cout << X1.trace() << std::endl;
             long double temp_i = i;
@@ -206,10 +209,35 @@ int main()
             std:: cout << H(g,X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9) << std:: endl;
             std:: cout << std::time(nullptr) - start << " seconds" << std::endl;
         }
+
+        if (i%500000 == 0)
+        {
+            matrix coordinates[18] = {X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9};
+            std:: fstream thermalised_coordinates("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/6x6/T_"+std::to_string(i/5000)+".txt", std::ios::out);
+            if (thermalised_coordinates.is_open())
+            {   
+                thermalised_coordinates << g << std:: endl;
+                for (int i = 0; i < 18; i++)
+                {
+                    for (int j = 0 ; j < N; j++)
+                    {
+                        for (int k = 0; k < N; k++)
+                        {
+                                    thermalised_coordinates << coordinates[i](j,k);
+                        }
+                        thermalised_coordinates << std:: endl;
+                    }
+                    thermalised_coordinates << std:: endl;
+                }
+            }
+            thermalised_coordinates.close();
+        }
     }
 
+    /*
     matrix coordinates[18] = {X1,X2,X3,X4,X5,X6,X7,X8,X9,V1,V2,V3,V4,V5,V6,V7,V8,V9};
-    std:: fstream thermalised_configuration("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_8x8.txt", std::ios::out);
+    std:: fstream thermalised_configuration("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_6x6.txt", std::ios::out);
+
     if (thermalised_configuration.is_open())
     {   
         thermalised_configuration << g << std:: endl;
@@ -219,7 +247,7 @@ int main()
             {
                 for (int k = 0; k < N; k++)
                 {
-                    thermalised_configuration << coordinates[i](j,k);
+                            thermalised_configuration << coordinates[i](j,k);
                 }
                 thermalised_configuration << std:: endl;
             }
@@ -229,8 +257,10 @@ int main()
     else{
         std:: cout << "Thermalised_branes.txt did not open correctly for writing";
     }
+
     thermalised_configuration << Energy << std::endl;
     thermalised_configuration.close();
-    std:: cout << std::time(nullptr) - start;
+    std:: cout << "Real time is: " << std::time(nullptr) - start << std:: endl;
+    */
     return 0;
 }

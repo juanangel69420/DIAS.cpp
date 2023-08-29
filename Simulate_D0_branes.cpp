@@ -6,19 +6,26 @@
 #include "eigen/Eigen/Dense"
 
 int start = std::time(nullptr);
-const int N = 8;
-const int iterations = 2e6;
-const long double dt = 1e-4;
-const int perturb_iterations = 1e4; 
-const int record = 1000;
+const int N = 6;
+const int iterations = 1e5;
+const long double dt = 1e-3;
+const int perturb_iterations = 1e3; 
+const int record = 100;
 
 typedef std::complex<long double> complex;
 typedef Eigen:: Matrix<std::complex<long double>, N, N> matrix;
 
 std:: mt19937 rng(std:: time(nullptr));
-std:: normal_distribution<long double> coeff_dist(0, 1e-8);
-const long double c1 = coeff_dist(rng);
-const long double c2 = coeff_dist(rng);
+std:: normal_distribution<long double> coeff_dist(0, 1e-6);
+
+// Fixing coefficients sfor reproducable results in thermalizing.
+
+const long double c1 = -3.93354e-7;
+const long double c2 = -3.17074e-7;
+
+//const long double c1 = coeff_dist(rng);
+//const long double c2 = coeff_dist(rng);
+
 long double coefficients[2] = {c1,c2};
 
 matrix commutator(matrix A, matrix B)
@@ -202,18 +209,23 @@ void perturb_update(
     matrix V1_sols_ds[iterations/record],V2_sols_ds[iterations/record],V3_sols_ds[iterations/record],V4_sols_ds[iterations/record];
     matrix V5_sols_ds[iterations/record],V6_sols_ds[iterations/record],V7_sols_ds[iterations/record],V8_sols_ds[iterations/record],V9_sols_ds[iterations/record];
 
+    complex X1_trace[iterations/record],X2_trace[iterations/record],X3_trace[iterations/record],X4_trace[iterations/record];
+    complex X5_trace[iterations/record],X6_trace[iterations/record],X7_trace[iterations/record],X8_trace[iterations/record],X9_trace[iterations/record];
+
+    matrix commutator_check[iterations/record];
+
 int main()
 {
     // Declaring the matrices. g, and energy.
+    std:: cout << c1 << std::endl << c2 << std:: endl;
     long double g;
     long double Energy;
-    std:: cout << g << std:: endl << Energy << std:: endl;
     matrix X1, X2, X3, X4, X5, X6, X7, X8, X9, X1_ds, X2_ds, X3_ds, X4_ds, X5_ds, X6_ds, X7_ds, X8_ds, X9_ds;
     matrix V1, V2, V3, V4, V5, V6, V7, V8, V9, V1_ds, V2_ds, V3_ds, V4_ds, V5_ds, V6_ds, V7_ds, V8_ds, V9_ds;
-
+    
     // Loading Unperturbed and perturbed coordinates
     matrix X[18];
-    std:: fstream thermalised_coordinates("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/Thermalised_branes_8x8.txt", std:: ios:: in);
+    std:: fstream thermalised_coordinates("C:/Users/cilli/DIAS.cpp/Thermalised_D0_branes/6x6/T_500.txt", std:: ios:: in);
     thermalised_coordinates >> g;
     for (int i = 0; i < 18; i++)
     {
@@ -236,14 +248,6 @@ int main()
     std:: cout << g << std:: endl;
     std:: cout << Energy << std::endl;
 
-    /*
-    std:: cout << "X1: " << X1 << std:: endl << "X1_ds: " << X1_ds << std:: endl << "X2: " << X2 << std:: endl << "X2_ds: " << X2_ds <<std:: endl;
-    std:: cout << "X3: " << X3 << std:: endl << "X3_ds: " << X3_ds << std:: endl << "X4: " << X4 << std:: endl << "X4_ds: " << X4_ds <<std:: endl;
-    std:: cout << "X5: " << X5 << std:: endl << "X5_ds: " << X5_ds << std:: endl << "X6: " << X6 << std:: endl << "X6_ds: " << X6_ds <<std:: endl;
-    std:: cout << "X7: " << X7 << std:: endl << "X7_ds: " << X7_ds << std:: endl << "X8: " << X8 << std:: endl << "X8_ds: " << X8_ds <<std:: endl;
-    std:: cout << "X9: " << X9 << std:: endl << "X9_ds: " << X9_ds << std:: endl;
-    */
-    
     // Initializing F function at t = 0 for use in the update function
     matrix F1_0 = F(1,X1,X2,X3,X4,X5,X6,X7,X8,X9);
     matrix F2_0 = F(2,X1,X2,X3,X4,X5,X6,X7,X8,X9);
@@ -306,6 +310,23 @@ int main()
             V5_sols_ds[i/record] = V5_ds, V6_sols_ds[i/record] = V6_ds, V7_sols_ds[i/record] = V7_ds, V8_sols_ds[i/record] = V8_ds,
             V9_sols_ds[i/record] = V9_ds;
 
+            X1_trace[i/record] = (X1*X1).trace(), X2_trace[i/record] = (X2*X2).trace(), X3_trace[i/record] = (X3*X3).trace();
+            X4_trace[i/record] = (X4*X4).trace(), X5_trace[i/record] = (X5*X5).trace(), X6_trace[i/record] = (X6*X6).trace();
+            X7_trace[i/record] = (X7*X7).trace(), X8_trace[i/record] = (X8*X8).trace(), X9_trace[i/record] = (X9*X9).trace();
+
+            matrix commy_sum;  
+            matrix X_commy[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
+            for (int k = 0; k < 9; k++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if(k == j)
+                        continue;
+                    commy_sum += commutator(X_commy[k],X_commy[j])*commutator(X_commy[k],X_commy[j]); //can likely be more efficient by less function calls
+                }
+            }
+            //std:: cout << commy_sum << std:: endl;
+            commutator_check[i/record] = commy_sum;
         }
 
         if (i%1000 == 0)
@@ -353,6 +374,24 @@ int main()
             V1_sols_ds[i/record] = V1_ds, V2_sols_ds[i/record] = V2_ds, V3_sols_ds[i/record] = V3_ds, V4_sols_ds[i/record] = V4_ds,
             V5_sols_ds[i/record] = V5_ds, V6_sols_ds[i/record] = V6_ds, V7_sols_ds[i/record] = V7_ds, V8_sols_ds[i/record] = V8_ds,
             V9_sols_ds[i/record] = V9_ds;
+
+            X1_trace[i/record] = (X1*X1).trace(), X2_trace[i/record] = (X2*X2).trace(), X3_trace[i/record] = (X3*X3).trace();
+            X4_trace[i/record] = (X4*X4).trace(), X5_trace[i/record] = (X5*X5).trace(), X6_trace[i/record] = (X6*X6).trace();
+            X7_trace[i/record] = (X7*X7).trace(), X8_trace[i/record] = (X8*X8).trace(), X9_trace[i/record] = (X9*X9).trace();   
+
+            matrix commy_sum;  
+            matrix X_commy[9] = {X1,X2,X3,X4,X5,X6,X7,X8,X9}; 
+            for (int k = 0; k < 9; k++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if(k == j)
+                        continue;
+                    commy_sum += commutator(X_commy[k],X_commy[j])*commutator(X_commy[k],X_commy[j]); //can likely be more efficient by less function calls
+                }
+            }
+            //std:: cout << commy_sum << std::endl;
+            commutator_check[i/record] = commy_sum;
         }
 
         if (i%50000 == 0)
@@ -364,13 +403,20 @@ int main()
         }
     }
     
+    for (int i = 0; i < iterations/record; i++)
+    {
+        std:: cout << commutator_check[i]<< std:: endl;
+    }
+    
     // Writing to files
-    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/8x8/E_351/X_sols.txt",std:: ios:: out);
-    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/8x8/E_351/X_sols_ds.txt", std:: ios:: out);
-    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/8x8/E_351/V_sols.txt", std:: ios:: out);
-    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/8x8/E_351/V_sols_ds.txt", std:: ios:: out);
+    std:: fstream X_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/X_sols.txt",std:: ios:: out);
+    std:: fstream X_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/X_sols_ds.txt", std:: ios:: out);
+    std:: fstream V_file("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/V_sols.txt", std:: ios:: out);
+    std:: fstream V_file_ds("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/E_183_g/V_sols_ds.txt", std:: ios:: out);
+    std:: fstream Trace_check("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/trace_check_1e3_test.txt", std::ios::out);
+    std:: fstream commy("C:/Users/cilli/DIAS.cpp/D0_Brane_Solutions/6x6/commy_check_1e3_test.txt", std::ios::out);
 
-    for (int k = 0; k < iterations/record; k ++)
+    for (int k = 0; k < iterations/record; k++)
         {
             for (int i = 0; i < N; i++)
             {
@@ -380,13 +426,20 @@ int main()
                     X_file_ds << X1_sols_ds[k](i,j);
                     V_file << V1_sols[k](i,j);
                     V_file_ds << V1_sols_ds[k](i,j);
+                    commy << commutator_check[k](i,j);
                 }
             }
             X_file << ":";
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X1_trace[k];
+            Trace_check << ":";
+            commy << ":";
         }
+
+    commy.close();
+
     for (int k = 0; k < iterations/record; k ++)
         {
             for (int i = 0; i < N; i++)
@@ -396,13 +449,15 @@ int main()
                     X_file << X2_sols[k](i,j);
                     X_file_ds << X2_sols_ds[k](i,j);
                     V_file << V2_sols[k](i,j);
-                    V_file_ds << V2_sols_ds[k](i,j);
+                    V_file_ds << V2_sols_ds[k](i,j);                    
                 }
             }
             X_file << ":";
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X2_trace[k];
+            Trace_check << ":";
         }
     for (int k = 0; k < iterations/record; k ++)
         {
@@ -420,6 +475,8 @@ int main()
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X3_trace[k];
+            Trace_check << ":";
         }
     for (int k = 0; k < iterations/record; k ++)
         {
@@ -431,12 +488,16 @@ int main()
                     X_file_ds << X4_sols_ds[k](i,j);
                     V_file << V4_sols[k](i,j);
                     V_file_ds << V4_sols_ds[k](i,j);
+
+                    
                 }
             }
             X_file << ":";
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X4_trace[k];
+            Trace_check << ":";
         }
     for (int k = 0; k < iterations/record; k ++)
         {
@@ -448,12 +509,16 @@ int main()
                     X_file_ds << X5_sols_ds[k](i,j);
                     V_file << V5_sols[k](i,j);
                     V_file_ds << V5_sols_ds[k](i,j);
+
+                    
                 }
             }
             X_file << ":";
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X5_trace[k];
+            Trace_check << ":";
         }
     for (int k = 0; k < iterations/record; k ++)
         {
@@ -465,12 +530,16 @@ int main()
                     X_file_ds << X6_sols_ds[k](i,j);
                     V_file << V6_sols[k](i,j);
                     V_file_ds << V6_sols_ds[k](i,j);
+
+                    
                 }
             }
             X_file << ":";
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X6_trace[k];
+            Trace_check << ":";
         }
     for (int k = 0; k < iterations/record; k ++)
         {
@@ -482,12 +551,16 @@ int main()
                     X_file_ds << X7_sols_ds[k](i,j);
                     V_file << V7_sols[k](i,j);
                     V_file_ds << V7_sols_ds[k](i,j);
+
+                    
                 }
             }
             X_file << ":";
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X7_trace[k];
+            Trace_check << ":";
         }
     for (int k = 0; k < iterations/record; k ++)
         {
@@ -499,12 +572,16 @@ int main()
                     X_file_ds << X8_sols_ds[k](i,j);
                     V_file << V8_sols[k](i,j);
                     V_file_ds << V8_sols_ds[k](i,j);
+
+                    
                 }
             }
             X_file << ":";
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X8_trace[k];
+            Trace_check << ":";
         }
     for (int k = 0; k < iterations/record; k ++)
         {
@@ -516,17 +593,23 @@ int main()
                     X_file_ds << X9_sols_ds[k](i,j);
                     V_file << V9_sols[k](i,j);
                     V_file_ds << V9_sols_ds[k](i,j);
+
+                    
                 }
             }
             X_file << ":";
             X_file_ds << ":";
             V_file << ":";
             V_file_ds << ":";
+            Trace_check << X9_trace[k];
+            Trace_check << ":";
         }
     
     X_file.close();
     X_file_ds.close();
     V_file.close();
     V_file_ds.close();
+    Trace_check.close();
+
     return 0;
 }
