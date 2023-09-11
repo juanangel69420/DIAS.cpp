@@ -8,8 +8,8 @@
 #include "eigen/Eigen/Dense"
 
 const int N = 3;
-typedef Eigen:: Matrix<std:: complex<double>, N, N> matrix;
-typedef std:: complex<double> complex;
+typedef Eigen:: Matrix<std::complex<double>, N, N> matrix;
+typedef std::complex<double> complex;
 
 /*
 Reserving memory for my P's, Q's, X's etc. So the P's will be a row/column vector where all components are real,
@@ -44,12 +44,12 @@ Eigen::Matrix<double, N, 1> Q41 = Eigen::Matrix<double, N, 1>::Random();
 Eigen::Matrix<double, N, 1> Q42 = Eigen::Matrix<double, N, 1>::Random(); 
 Eigen::Matrix<double, N, 1> Q43 = Eigen::Matrix<double, N, 1>::Random();
 
-Eigen::Matrix<double, 1, N> P14 = Eigen::Matrix<double, N, 1>::Random();
-Eigen::Matrix<double, N, 1> P24 = Eigen::Matrix<double, N, 1>::Random(); 
-Eigen::Matrix<double, N, 1> P34 = Eigen::Matrix<double, N, 1>::Random();
-Eigen::Matrix<double, N, 1> Q14 = Eigen::Matrix<double, N, 1>::Random(); 
-Eigen::Matrix<double, N, 1> Q24 = Eigen::Matrix<double, N, 1>::Random();
-Eigen::Matrix<double, N, 1> Q34 = Eigen::Matrix<double, N, 1>::Random();
+Eigen::Matrix<double, 1, N> P14 = Eigen::Matrix<double, 1, N>::Random();
+Eigen::Matrix<double, 1, N> P24 = Eigen::Matrix<double, 1, N>::Random(); 
+Eigen::Matrix<double, 1, N> P34 = Eigen::Matrix<double, 1, N>::Random();
+Eigen::Matrix<double, 1, N> Q14 = Eigen::Matrix<double, 1, N>::Random(); 
+Eigen::Matrix<double, 1, N> Q24 = Eigen::Matrix<double, 1, N>::Random();
+Eigen::Matrix<double, 1, N> Q34 = Eigen::Matrix<double, 1, N>::Random();
 
 Eigen::Matrix<std::complex<double>, N, 1> Z41 = P41 + complex(0,1)*Q41;
 Eigen::Matrix<std::complex<double>, N, 1> Z42 = P42 + complex(0,1)*Q42;
@@ -59,14 +59,28 @@ Eigen::Matrix<std::complex<double>, 1, N> Z24 = P24 + complex(0,1)*Q24;
 Eigen::Matrix<std::complex<double>, 1, N> Z34 = P34 + complex(0,1)*Q34;
 
 // Scalar X's
-complex X11, X12, X13, X14, X15, X16, X17, X18, X19;
-complex X21, X22, X23, X24, X25, X26, X27, X28, X29;
-complex X31, X32, X33, X34, X35, X36, X37, X38, X39;
+complex X11 = complex(gauss_dist(rng)), X12 = complex(gauss_dist(rng)), X13 = complex(gauss_dist(rng)), X14 = complex(gauss_dist(rng));
+complex X15 = complex(gauss_dist(rng)), X16 = complex(gauss_dist(rng)), X17 = complex(gauss_dist(rng)), X18 = complex(gauss_dist(rng));
+complex X19 = complex(gauss_dist(rng)), X21 = complex(gauss_dist(rng)), X22 = complex(gauss_dist(rng)), X23 = complex(gauss_dist(rng));
+complex X24 = complex(gauss_dist(rng)), X25 = complex(gauss_dist(rng)), X26 = complex(gauss_dist(rng)), X27 = complex(gauss_dist(rng));
+complex X28 = complex(gauss_dist(rng)), X29 = complex(gauss_dist(rng)), X31 = complex(gauss_dist(rng)), X32 = complex(gauss_dist(rng));
+complex X33 = complex(gauss_dist(rng)), X34 = complex(gauss_dist(rng)), X35 = complex(gauss_dist(rng)), X36 = complex(gauss_dist(rng));
+complex X37 = complex(gauss_dist(rng)), X38 = complex(gauss_dist(rng)), X39 = complex(gauss_dist(rng));
 
 // Matrix X's
-matrix X41, X42, X43, X44, X45, X46, X47, X48, X49;
+
+matrix X41 = matrix::Random();
+matrix X42 = matrix::Random();
+matrix X43 = matrix::Random();
+matrix X44 = matrix::Random();
+matrix X45 = matrix::Random();
+matrix X46 = matrix::Random();
+matrix X47 = matrix::Random();
+matrix X48 = matrix::Random();
+matrix X49 = matrix::Random();
 
 int main()
 {
+    std::cout << sqrt(abs(X41(0)));
     return 0;
 }
