@@ -84,8 +84,8 @@ col Z41 = col::Random();
 col Z42 = col::Random();
 col Z43 = col::Random();
 row Z14 = row::Random();
-row Z24 = /*row::Zero();*/row::Random(); 
-row Z34 = row::Zero();//row::Random();
+row Z24 = row::Random(); 
+row Z34 = row::Random();
 
 // initialise the Z_n'
 
@@ -119,10 +119,10 @@ row U24 = row::Zero();
 row U34 = row::Zero();
 
 // Initialise c's as complex but they may be real ask Swapno if things don't work
-double c1 = 2; //gauss_dist(rng);
-double c2 = 3; //gauss_dist(rng);
-double c3 = 0; //gauss_dist(rng);
-double c4 = 0; //gauss_dist(rng);
+double c1 = gauss_dist(rng);
+double c2 = gauss_dist(rng);
+double c3 = gauss_dist(rng);
+double c4 = gauss_dist(rng);
 
 // Define the Energy 
 double H(double K, double V_D)
@@ -249,7 +249,7 @@ void update(
     *Z12_n = *Z12 + *U12*dt - 0.5*FZ12(*Z12, *Z13, *Z14, *Z21, *Z31, *Z41, *Z23, *Z24, *Z32, *Z42)*pow(dt,2);
     *Z13_n = *Z13 + *U13*dt - 0.5*FZ13(*Z12, *Z13, *Z14, *Z21, *Z31, *Z41, *Z23, *Z34, *Z32, *Z43)*pow(dt,2);
     *Z21_n = *Z21 + *U21*dt - 0.5*FZ21(*Z12, *Z13, *Z14, *Z21, *Z31, *Z41, *Z23, *Z24, *Z32, *Z42)*pow(dt,2);
-    *Z23_n = *Z23 + *U23*dt - 0.5*FZ23(*Z23, *Z21, *Z24, *Z12, *Z32, *Z42, *Z31, *Z24, *Z13, *Z43)*pow(dt,2);
+    *Z23_n = *Z23 + *U23*dt - 0.5*FZ23(*Z23, *Z21, *Z24, *Z12, *Z32, *Z42, *Z31, *Z34, *Z13, *Z43)*pow(dt,2);
     *Z31_n = *Z31 + *U31*dt - 0.5*FZ31(*Z12, *Z13, *Z14, *Z21, *Z31, *Z41, *Z23, *Z34, *Z32, *Z43)*pow(dt,2);
     *Z32_n = *Z32 + *U32*dt - 0.5*FZ32(*Z23, *Z21, *Z24, *Z12, *Z32, *Z42, *Z31, *Z34, *Z13, *Z43)*pow(dt,2);
     *Z14_n = *Z14 + *U14*dt - 0.5*FZ14(*Z14, *Z12, *Z13, *Z21, *Z31, *Z41, *Z42, *Z43, *Z24, *Z34)*pow(dt,2);
@@ -262,9 +262,9 @@ void update(
     *U12 = *U12 - 0.5*(FZ12(*Z12, *Z13, *Z14, *Z21, *Z31, *Z41, *Z23, *Z24, *Z32, *Z42) + FZ12(*Z12_n, *Z13_n, *Z14_n, *Z21_n, *Z31_n, *Z41_n, *Z23_n, *Z24_n, *Z32_n, *Z42_n))*dt;
     *U13 = *U13 - 0.5*(FZ13(*Z12, *Z13, *Z14, *Z21, *Z31, *Z41, *Z23, *Z34, *Z32, *Z43) + FZ13(*Z12_n, *Z13_n, *Z14_n, *Z21_n, *Z31_n, *Z41_n, *Z23_n, *Z34_n, *Z32_n, *Z43_n))*dt;
     *U21 = *U21 - 0.5*(FZ21(*Z12, *Z13, *Z14, *Z21, *Z31, *Z41, *Z23, *Z24, *Z32, *Z42) + FZ21(*Z12_n, *Z13_n, *Z14_n, *Z21_n, *Z31_n, *Z41_n, *Z23_n, *Z24_n, *Z32_n, *Z42_n))*dt;
-    *U23 = *U23 - 0.5*(FZ23(*Z23, *Z21, *Z24, *Z12, *Z32, *Z42, *Z31, *Z24, *Z13, *Z43) + FZ23(*Z23_n, *Z21_n, *Z24_n, *Z12_n, *Z32_n, *Z42_n, *Z31_n, *Z24_n, *Z13_n, *Z43_n))*dt; 
+    *U23 = *U23 - 0.5*(FZ23(*Z23, *Z21, *Z24, *Z12, *Z32, *Z42, *Z31, *Z34, *Z13, *Z43) + FZ23(*Z23_n, *Z21_n, *Z24_n, *Z12_n, *Z32_n, *Z42_n, *Z31_n, *Z34_n, *Z13_n, *Z43_n))*dt; 
     *U31 = *U31 - 0.5*(FZ31(*Z12, *Z13, *Z14, *Z21, *Z31, *Z41, *Z23, *Z34, *Z32, *Z43) + FZ31(*Z12_n, *Z13_n, *Z14_n, *Z21_n, *Z31_n, *Z41_n, *Z23_n, *Z34_n, *Z32_n, *Z43_n))*dt;
-    *U32 = *U32 - 0.5*(FZ32(*Z23, *Z21, *Z24, *Z12, *Z32, *Z42, *Z31, *Z34, *Z13, *Z43) + FZ32(*Z23_n, *Z21_n, *Z24_n, *Z12_n, *Z32_n, *Z42_n, *Z31_n, *Z34_n, *Z13_n, *Z43_n))*dt;
+    *U32 = *U32 - 0.5*(FZ32(*Z23, *Z21, *Z24, *Z12, *Z32, *Z42, *Z31, *Z34, *Z13, *Z43) + FZ32(*Z23_n, *Z21_n, *Z24_n, *Z12_n, *Z32_n, *Z42_n, *Z31_n, *Z34_n, *Z13_n, *Z43_n))*dt;         
     *U14 = *U14 - 0.5*(FZ14(*Z14, *Z12, *Z13, *Z21, *Z31, *Z41, *Z42, *Z43, *Z24, *Z34) + FZ14(*Z14_n, *Z12_n, *Z13_n, *Z21_n, *Z31_n, *Z41_n, *Z42_n, *Z43_n, *Z24_n, *Z34_n))*dt;
     *U24 = *U24 - 0.5*(FZ24(*Z24, *Z21, *Z23, *Z12, *Z32, *Z41, *Z42, *Z43, *Z14, *Z34) + FZ24(*Z24_n, *Z21_n, *Z23_n, *Z12_n, *Z32_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z34_n))*dt;
     *U34 = *U34 - 0.5*(FZ34(*Z34, *Z31, *Z32, *Z13, *Z23, *Z41, *Z42, *Z43, *Z14, *Z24) + FZ34(*Z34_n, *Z31_n, *Z32_n, *Z13_n, *Z23_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n))*dt;
