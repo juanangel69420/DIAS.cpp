@@ -173,7 +173,7 @@ double V_gauge(
     return V1_gauge + V2_gauge + 0.25 * V3_gauge;
 }
 
-std:: mt19937 rng(100/*std::time(nullptr)*/);
+std:: mt19937 rng(std::time(nullptr));
 std:: normal_distribution<long double> gauss_dist(0, 1);
 
 // Initialise the Z variables only and let U be the \dot{Z} coordinates
@@ -187,9 +187,9 @@ complex Z32 = complex(gauss_dist(rng),gauss_dist(rng));
 col Z41 = col::Zero();//col::Random();
 col Z42 = col::Zero();//col::Random();
 col Z43 = col::Zero();//col::Random();
-row Z14 = row::Zero();
-row Z24 = row::Zero(); 
-row Z34 = row::Zero();
+row Z14 = row::Random();
+row Z24 = row::Random(); 
+row Z34 = row::Random();
 
 // initialise the Z_n'
 
@@ -208,9 +208,9 @@ row Z24_n = row::Zero();
 row Z34_n = row::Zero();
 
 // initiailise the X's
-double X11 = 0;//gauss_dist(rng);
-double X12 = 0;//gauss_dist(rng);
-double X13 = 0;//gauss_dist(rng);
+double X11 = gauss_dist(rng);
+double X12 = gauss_dist(rng);
+double X13 = gauss_dist(rng);
 double X14 = 0;//gauss_dist(rng);
 double X15 = 0;//gauss_dist(rng);
 double X16 = 0;//gauss_dist(rng);
@@ -218,9 +218,9 @@ double X17 = 0;//gauss_dist(rng);
 double X18 = 0;//gauss_dist(rng);
 double X19 = 0;//gauss_dist(rng);
 
-double X21 = 0;//gauss_dist(rng);
-double X22 = 0;//gauss_dist(rng);
-double X23 = 0;//gauss_dist(rng);
+double X21 = gauss_dist(rng);
+double X22 = gauss_dist(rng);
+double X23 = gauss_dist(rng);
 double X24 = 0;//gauss_dist(rng);
 double X25 = 0;//gauss_dist(rng);
 double X26 = 0;//gauss_dist(rng);
@@ -228,9 +228,9 @@ double X27 = 0;//gauss_dist(rng);
 double X28 = 0;//gauss_dist(rng);
 double X29 = 0;//gauss_dist(rng);
 
-double X31 = 0;//gauss_dist(rng);
-double X32 = 0;//gauss_dist(rng);
-double X33 = 0;//gauss_dist(rng);
+double X31 = gauss_dist(rng);
+double X32 = gauss_dist(rng);
+double X33 = gauss_dist(rng);
 double X34 = 0;//gauss_dist(rng);
 double X35 = 0;//gauss_dist(rng);
 double X36 = 0;//gauss_dist(rng);
@@ -543,6 +543,8 @@ row FZ34(
         X32*X32*matrix::Identity() - 2*X32*X42 + X42*X42 +
         X33*X33*matrix::Identity() - 2*X33*X43 + X43*X43
     );
+
+    return V_D + V_gauge;
 }
 
 col FZ43(
@@ -617,7 +619,7 @@ double FX32(double X32, double X12, double X22, complex Z31, complex Z13, comple
     return V_gauge;
 }
 
-double FX33(double X33, double X13, double X23, complex Z31, complex Z13, complex Z32, complex Z23, row Z34, col Z43, matrix X42)
+double FX33(double X33, double X13, double X23, complex Z31, complex Z13, complex Z32, complex Z23, row Z34, col Z43, matrix X43)
 {
     double V_gauge = 2 * ((X33 - X13)*(modsqr(Z31) + modsqr(Z13)) + (X33 - X23)*(modsqr(Z32) + modsqr(Z23)))
     + 2 * X33 * (rowabsqr(Z34) + colabsqr(Z43)) - 2 * (Z34 * X43 * Z34.adjoint()).trace().real() - 2 * (Z43.adjoint() * X43 * Z43).trace().real();
@@ -1039,7 +1041,7 @@ int main()
     
     // X41 = matrix::Zero();
     // X42 = matrix::Zero();
-    X43 = matrix::Zero();
+    // X43 = matrix::Zero();
     X44 = matrix::Zero();
     X45 = matrix::Zero();
     X46 = matrix::Zero();
