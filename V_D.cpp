@@ -184,9 +184,9 @@ complex Z23 = complex(gauss_dist(rng),gauss_dist(rng));
 complex Z31 = complex(gauss_dist(rng),gauss_dist(rng)); 
 complex Z32 = complex(gauss_dist(rng),gauss_dist(rng)); 
 
-col Z41 = col::Zero();//col::Random();
-col Z42 = col::Zero();//col::Random();
-col Z43 = col::Zero();//col::Random();
+col Z41 = col::Random();//col::Random();
+col Z42 = col::Random();//col::Random();
+col Z43 = col::Random();//col::Random();
 row Z14 = row::Random();
 row Z24 = row::Random(); 
 row Z34 = row::Random();
@@ -484,19 +484,28 @@ row FZ14(
         X11*X11*matrix::Identity() - 2*X11*X41 + X41*X41 +
         X12*X12*matrix::Identity() - 2*X12*X42 + X42*X42 + 
         X13*X13*matrix::Identity() - 2*X13*X43 + X43*X43
-        );
+    );
 
     return V_D + V_gauge;
 }
 
 col FZ41(
     row Z14, complex Z12, complex Z13, complex Z21, complex Z31, col Z41, 
-    col Z42, col Z43, row Z24, row Z34, matrix phi41, matrix phi42, matrix phi43)
+    col Z42, col Z43, row Z24, row Z34, matrix phi41, matrix phi42, matrix phi43,
+    double X11, double X12, double X13, matrix X41, matrix X42, matrix X43)
 {
     //V_D piece
-    return complex(2,0) * (- Z41*(modsqr(Z12) + modsqr(Z13) + rowabsqr(Z14) - modsqr(Z21) - modsqr(Z31) - colabsqr(Z41) -c1/(g*g))
+    col V_D = complex(2,0) * (- Z41*(modsqr(Z12) + modsqr(Z13) + rowabsqr(Z14) - modsqr(Z21) - modsqr(Z31) - colabsqr(Z41) -c1/(g*g))
     + (Z41*Z41.adjoint() + Z42*Z42.adjoint() + Z43*Z43.adjoint() - Z14.adjoint()*Z14 - Z24.adjoint()*Z24 - Z34.adjoint()*Z34
     + commutator(phi41,phi41.adjoint()) + commutator(phi42,phi42.adjoint()) + commutator(phi43,phi43.adjoint()) - c4/(g*g) * matrix::Identity())*Z41);
+
+    col V_gauge = complex(2,0) * (
+        X11*X11*matrix::Identity() - 2*X11*X41 + X41*X41 +
+        X12*X12*matrix::Identity() - 2*X12*X42 + X42*X42 + 
+        X13*X13*matrix::Identity() - 2*X13*X43 + X43*X43
+    ) * Z41;
+
+    return V_D + V_gauge;
 }
 
 row FZ24(
@@ -520,12 +529,21 @@ row FZ24(
 
 col FZ42(
     row Z24, complex Z21, complex Z23, complex Z12, complex Z32, col Z41,
-    col Z42, col Z43, row Z14, row Z34, matrix phi41, matrix phi42, matrix phi43)
+    col Z42, col Z43, row Z14, row Z34, matrix phi41, matrix phi42, matrix phi43,
+    double X21, double X22, double X23, matrix X41, matrix X42, matrix X43)
 {
     //V_D piece
-    return complex(2,0) * (- Z42*(modsqr(Z21) + modsqr(Z23) + rowabsqr(Z24) - modsqr(Z12) - modsqr(Z32) - colabsqr(Z42) - c2/(g*g))
+    col V_D = complex(2,0) * (- Z42*(modsqr(Z21) + modsqr(Z23) + rowabsqr(Z24) - modsqr(Z12) - modsqr(Z32) - colabsqr(Z42) - c2/(g*g))
     + (Z41*Z41.adjoint() + Z42*Z42.adjoint() + Z43*Z43.adjoint() - Z14.adjoint()*Z14 - Z24.adjoint()*Z24 - Z34.adjoint()*Z34
     + commutator(phi41,phi41.adjoint()) + commutator(phi42,phi42.adjoint()) + commutator(phi43,phi43.adjoint()) - c4/(g*g) * matrix::Identity())*Z42);
+
+    col V_gauge = complex(2,0) * (
+        X21*X21*matrix::Identity() - 2*X21*X41 + X41*X41 +
+        X22*X22*matrix::Identity() - 2*X22*X42 + X42*X42 + 
+        X23*X23*matrix::Identity() - 2*X23*X43 + X43*X43
+    ) * Z42;
+
+    return V_D + V_gauge;
 }
 
 row FZ34(
@@ -549,12 +567,21 @@ row FZ34(
 
 col FZ43(
     row Z34, complex Z31, complex Z32, complex Z13, complex Z23, col Z41,
-    col Z42, col Z43, row Z14, row Z24, matrix phi41, matrix phi42, matrix phi43)
+    col Z42, col Z43, row Z14, row Z24, matrix phi41, matrix phi42, matrix phi43,
+    double X31, double X32, double X33, matrix X41, matrix X42, matrix X43)
 {
     //V_D piece
-    return complex(2,0) * (- Z43*(modsqr(Z31) + modsqr(Z32) + rowabsqr(Z34) - modsqr(Z13) - modsqr(Z23) - colabsqr(Z43) - c3/(g*g))
+    col V_D = complex(2,0) * (- Z43*(modsqr(Z31) + modsqr(Z32) + rowabsqr(Z34) - modsqr(Z13) - modsqr(Z23) - colabsqr(Z43) - c3/(g*g))
     + (Z41*Z41.adjoint() + Z42*Z42.adjoint() + Z43*Z43.adjoint() - Z14.adjoint()*Z14 - Z24.adjoint()*Z24 - Z34.adjoint()*Z34
     + commutator(phi41,phi41.adjoint()) + commutator(phi42,phi42.adjoint()) + commutator(phi43,phi43.adjoint()) - c4/(g*g) * matrix::Identity())*Z43);
+
+    col V_gauge = complex(2,0) * (
+        X31*X31*matrix::Identity() - 2*X31*X41 + X41*X41 +
+        X32*X32*matrix::Identity() - 2*X32*X42 + X42*X42 +
+        X33*X33*matrix::Identity() - 2*X33*X43 + X43*X43
+    ) * Z43;
+
+    return V_D + V_gauge;
 }
 
 // Now the X functions
@@ -725,8 +752,28 @@ matrix FX43(
 matrix FX44(matrix X45, col Z41, col Z42, col Z43, row Z14, row Z24, row Z34, matrix phi41, matrix phi42, matrix phi43, double c4)
 {
     //V_D part 
-    matrix vd = complex(0,2)*commutator(gamma(Z41, Z42, Z43, Z14, Z24, Z34, phi41, phi42, phi43, c4),X45);
-    return vd;
+    matrix V_D = complex(0,2)*commutator(gamma(Z41, Z42, Z43, Z14, Z24, Z34, phi41, phi42, phi43, c4),X45);
+    
+    // V1_gauge
+    matrix V1_gauge = (
+        anticommutator(M41,X44) - 2 * X14 *(M41 + M14) + anticommutator(M14,X44) +
+        anticommutator(M42,X44) - 2 * X24 *(M42 + M24) + anticommutator(M24,X44) +
+        anticommutator(M43,X44) - 2 * X34 *(M43 + M34) + anticommutator(M34,X44)
+    );
+    
+    // V2_gauge
+    matrix P1 = commutator(X41, commutator(X41, phi41));
+    matrix P2 = commutator(X42, commutator(X42, phi42));
+    matrix P3 = commutator(X43, commutator(X43, phi43));
+
+    matrix V2_gauge = (
+        (P1 + P1.adjoint()) + (P2 + P2.adjoint()) + (P3 + P3.adjoint()) 
+    ); 
+
+    matrix V3_gauge = (
+        commutator(commutator(X44, X41), X41) + commutator(commutator(X44,X42), X42) + commutator(commutator(X44,X43), X43)
+    );
+    return V_D + V1_gauge + V2_gauge;
 }
 
 matrix FX45(matrix X44, col Z41, col Z42, col Z43, row Z14, row Z24, row Z34, matrix phi41, matrix phi42, matrix phi43, double c4)
@@ -803,9 +850,9 @@ void update(
     *Z24_n = *Z24 + *U24*dt - 0.5*FZ24(*Z24, *Z21, *Z23, *Z12, *Z32, *Z41, *Z42, *Z43, *Z14, *Z34, *phi41, *phi42, *phi43, *X21, *X22, *X23, *X41, *X42, *X43)*pow(dt,2);
     *Z34_n = *Z34 + *U34*dt - 0.5*FZ34(*Z34, *Z31, *Z32, *Z13, *Z23, *Z41, *Z42, *Z43, *Z14, *Z24, *phi41, *phi42, *phi43, *X31, *X32, *X33, *X41, *X42, *X43)*pow(dt,2);
     
-    *Z41_n = *Z41 + *U41*dt - 0.5*FZ41(*Z14, *Z12, *Z13, *Z21, *Z31, *Z41, *Z42, *Z43, *Z24, *Z34, *phi41, *phi42, *phi43)*pow(dt,2);
-    *Z42_n = *Z42 + *U42*dt - 0.5*FZ42(*Z24, *Z21, *Z23, *Z12, *Z32, *Z41, *Z42, *Z43, *Z14, *Z34, *phi41, *phi42, *phi43)*pow(dt,2);
-    *Z43_n = *Z43 + *U43*dt - 0.5*FZ43(*Z34, *Z31, *Z32, *Z13, *Z23, *Z41, *Z42, *Z43, *Z14, *Z24, *phi41, *phi42, *phi43)*pow(dt,2);
+    *Z41_n = *Z41 + *U41*dt - 0.5*FZ41(*Z14, *Z12, *Z13, *Z21, *Z31, *Z41, *Z42, *Z43, *Z24, *Z34, *phi41, *phi42, *phi43, *X11, *X12, *X13, *X41, *X42, *X43)*pow(dt,2);
+    *Z42_n = *Z42 + *U42*dt - 0.5*FZ42(*Z24, *Z21, *Z23, *Z12, *Z32, *Z41, *Z42, *Z43, *Z14, *Z34, *phi41, *phi42, *phi43, *X21, *X22, *X23, *X41, *X42, *X43)*pow(dt,2);
+    *Z43_n = *Z43 + *U43*dt - 0.5*FZ43(*Z34, *Z31, *Z32, *Z13, *Z23, *Z41, *Z42, *Z43, *Z14, *Z24, *phi41, *phi42, *phi43, *X31, *X32, *X33, *X41, *X42, *X43)*pow(dt,2);
     
     // Update these M coordinates 
     *M41_n = (*Z41_n) * (*Z41_n).adjoint(); 
@@ -869,9 +916,9 @@ void update(
     *U14 = *U14 - 0.5*(FZ14(*Z14, *Z12, *Z13, *Z21, *Z31, *Z41, *Z42, *Z43, *Z24, *Z34, *phi41, *phi42, *phi43, *X11, *X12, *X13, *X41, *X42, *X43) + FZ14(*Z14_n, *Z12_n, *Z13_n, *Z21_n, *Z31_n, *Z41_n, *Z42_n, *Z43_n, *Z24_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n, *X11_n, *X12_n, *X13_n, *X41_n, *X42_n, *X43_n))*dt;
     *U24 = *U24 - 0.5*(FZ24(*Z24, *Z21, *Z23, *Z12, *Z32, *Z41, *Z42, *Z43, *Z14, *Z34, *phi41, *phi42, *phi43, *X21, *X22, *X23, *X41, *X42, *X43) + FZ24(*Z24_n, *Z21_n, *Z23_n, *Z12_n, *Z32_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n, *X21_n, *X22_n, *X23_n, *X41_n, *X42_n, *X43_n))*dt;
     *U34 = *U34 - 0.5*(FZ34(*Z34, *Z31, *Z32, *Z13, *Z23, *Z41, *Z42, *Z43, *Z14, *Z24, *phi41, *phi42, *phi43, *X31, *X32, *X33, *X41, *X42, *X43) + FZ34(*Z34_n, *Z31_n, *Z32_n, *Z13_n, *Z23_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n, *phi41_n, *phi42_n, *phi43_n, *X31_n, *X32_n, *X33_n, *X41_n, *X42_n, *X43_n))*dt;
-    *U41 = *U41 - 0.5*(FZ41(*Z14, *Z12, *Z13, *Z21, *Z31, *Z41, *Z42, *Z43, *Z24, *Z34,*phi41, *phi42, *phi43) + FZ41(*Z14_n, *Z12_n, *Z13_n, *Z21_n, *Z31_n, *Z41_n, *Z42_n, *Z43_n, *Z24_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n))*dt;
-    *U42 = *U42 - 0.5*(FZ42(*Z24, *Z21, *Z23, *Z12, *Z32, *Z41, *Z42, *Z43, *Z14, *Z34,*phi41, *phi42, *phi43) + FZ42(*Z24_n, *Z21_n, *Z23_n, *Z12_n, *Z32_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n))*dt;
-    *U43 = *U43 - 0.5*(FZ43(*Z34, *Z31, *Z32, *Z13, *Z23, *Z41, *Z42, *Z43, *Z14, *Z24,*phi41, *phi42, *phi43) + FZ43(*Z34_n, *Z31_n, *Z32_n, *Z13_n, *Z23_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n, *phi41_n, *phi42_n, *phi43_n))*dt;
+    *U41 = *U41 - 0.5*(FZ41(*Z14, *Z12, *Z13, *Z21, *Z31, *Z41, *Z42, *Z43, *Z24, *Z34, *phi41, *phi42, *phi43, *X11, *X12, *X13, *X41, *X42, *X43) + FZ41(*Z14_n, *Z12_n, *Z13_n, *Z21_n, *Z31_n, *Z41_n, *Z42_n, *Z43_n, *Z24_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n, *X11_n, *X12_n, *X13_n, *X41_n, *X42_n, *X43_n))*dt;
+    *U42 = *U42 - 0.5*(FZ42(*Z24, *Z21, *Z23, *Z12, *Z32, *Z41, *Z42, *Z43, *Z14, *Z34, *phi41, *phi42, *phi43, *X21, *X22, *X23, *X41, *X42, *X43) + FZ42(*Z24_n, *Z21_n, *Z23_n, *Z12_n, *Z32_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n, *X21_n, *X22_n, *X23_n, *X41_n, *X42_n, *X43_n))*dt;
+    *U43 = *U43 - 0.5*(FZ43(*Z34, *Z31, *Z32, *Z13, *Z23, *Z41, *Z42, *Z43, *Z14, *Z24, *phi41, *phi42, *phi43, *X31, *X32, *X33, *X41, *X42, *X43) + FZ43(*Z34_n, *Z31_n, *Z32_n, *Z13_n, *Z23_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n, *phi41_n, *phi42_n, *phi43_n, *X31_n, *X32_n, *X33_n, *X41_n, *X42_n, *X43_n))*dt;
 
     // Update the V's here (The velocities of the X's)
     *V11 = *V11 - 0.5*(FX11(*X11, *X21, *X31, *Z12, *Z21, *Z13, *Z31, *Z14, *Z41, *X41) + FX11(*X11_n, *X21_n, *X31_n, *Z12_n, *Z21_n, *Z13_n, *Z31_n, *Z14_n, *Z41_n, *X41_n))*dt;
