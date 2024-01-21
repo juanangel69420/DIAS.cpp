@@ -749,7 +749,11 @@ matrix FX43(
     return V1_gauge + V2_gauge + V3_gauge;
 }
 
-matrix FX44(matrix X45, col Z41, col Z42, col Z43, row Z14, row Z24, row Z34, matrix phi41, matrix phi42, matrix phi43, double c4)
+matrix FX44(
+    matrix X41, matrix X42, matrix X43, matrix X44, matrix X45, matrix phi41, matrix phi42, matrix phi43,
+    matrix M14, matrix M24, matrix M34, matrix M41, matrix M42, matrix M43, 
+    double X14, double X24, double X34,
+    col Z41, col Z42, col Z43, row Z14, row Z24, row Z34, double c4)
 {
     //V_D part 
     matrix V_D = complex(0,2)*commutator(gamma(Z41, Z42, Z43, Z14, Z24, Z34, phi41, phi42, phi43, c4),X45);
@@ -773,7 +777,7 @@ matrix FX44(matrix X45, col Z41, col Z42, col Z43, row Z14, row Z24, row Z34, ma
     matrix V3_gauge = (
         commutator(commutator(X44, X41), X41) + commutator(commutator(X44,X42), X42) + commutator(commutator(X44,X43), X43)
     );
-    return V_D + V1_gauge + V2_gauge;
+    return V_D + V1_gauge + V2_gauge + V3_gauge;
 }
 
 matrix FX45(matrix X44, col Z41, col Z42, col Z43, row Z14, row Z24, row Z34, matrix phi41, matrix phi42, matrix phi43, double c4)
@@ -895,7 +899,7 @@ void update(
     *X41_n = *X41 + *V41*dt - 0.5*FX41(*X11, *X21, *X31, *X41, *X42, *X43, *phi41, *phi42, *phi43, *M41, *M42, *M43, *M14, *M24, *M34)*pow(dt,2);
     *X42_n = *X42 + *V42*dt - 0.5*FX42(*X12, *X22, *X32, *X41, *X42, *X43, *phi41, *phi42, *phi43, *M41, *M42, *M43, *M14, *M24, *M34)*pow(dt,2);
     *X43_n = *X43 + *V43*dt - 0.5*FX43(*X13, *X23, *X33, *X41, *X42, *X43, *phi41, *phi42, *phi43, *M41, *M42, *M43, *M14, *M24, *M34)*pow(dt,2);
-    *X44_n = *X44 + *V44*dt - 0.5*FX44(*X45, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *phi41, *phi42, *phi43, *c4)*pow(dt,2);
+    *X44_n = *X44 + *V44*dt - 0.5*FX44(*X41, *X42, *X43, *X44, *X45, *phi41, *phi42, *phi43, *M14,*M24, *M34, *M41, *M42, *M43, *X14, *X24, *X34, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *c4)*pow(dt,2);
     *X45_n = *X45 + *V45*dt - 0.5*FX45(*X44, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *phi41, *phi42, *phi43, *c4)*pow(dt,2);
     *X46_n = *X46 + *V46*dt - 0.5*FX46(*X47, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *phi41, *phi42, *phi43, *c4)*pow(dt,2);
     *X47_n = *X47 + *V47*dt - 0.5*FX47(*X46, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *phi41, *phi42, *phi43, *c4)*pow(dt,2);
@@ -953,7 +957,7 @@ void update(
     *V41 = *V41 - 0.5*(FX41(*X11, *X21, *X31, *X41, *X42, *X43, *phi41, *phi42, *phi43, *M41, *M42, *M43, *M14, *M24, *M34) + FX41(*X11_n, *X21_n, *X31_n, *X41_n, *X42_n, *X43_n, *phi41_n, *phi42_n, *phi43_n, *M41_n, *M42_n, *M43_n, *M14_n, *M24_n, *M34_n))*dt;
     *V42 = *V42 - 0.5*(FX42(*X12, *X22, *X32, *X41, *X42, *X43, *phi41, *phi42, *phi43, *M41, *M42, *M43, *M14, *M24, *M34) + FX42(*X12_n, *X22_n, *X32_n, *X41_n, *X42_n, *X43_n, *phi41_n, *phi42_n, *phi43_n, *M41_n, *M42_n, *M43_n, *M14_n, *M24_n, *M34_n))*dt;
     *V43 = *V43 - 0.5*(FX43(*X13, *X23, *X33, *X41, *X42, *X43, *phi41, *phi42, *phi43, *M41, *M42, *M43, *M14, *M24, *M34) + FX43(*X13_n, *X23_n, *X33_n, *X41_n, *X42_n, *X43_n, *phi41_n, *phi42_n, *phi43_n, *M41_n, *M42_n, *M43_n, *M14_n, *M24_n, *M34_n))*dt;
-    *V44 = *V44 - 0.5*(FX44(*X45, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *phi41, *phi42, *phi43, *c4) + FX44(*X45_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n, *c4))*dt;
+    *V44 = *V44 - 0.5*(FX44(*X41, *X42, *X43, *X44, *X45, *phi41, *phi42, *phi43, *M14,*M24, *M34, *M41, *M42, *M43, *X14, *X24, *X34, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *c4) + FX44(*X41_n, *X42_n, *X43_n, *X44_n, *X45_n, *phi41_n, *phi42_n, *phi43_n, *M14_n, *M24_n, *M34_n, *M41_n, *M42_n, *M43_n, *X14_n, *X24_n, *X34_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n, *Z34_n, *c4))*dt;
     *V45 = *V45 - 0.5*(FX45(*X44, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *phi41, *phi42, *phi43, *c4) + FX45(*X44_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n, *c4))*dt;
     *V46 = *V46 - 0.5*(FX46(*X47, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *phi41, *phi42, *phi43, *c4) + FX46(*X47_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n, *c4))*dt;
     *V47 = *V47 - 0.5*(FX47(*X46, *Z41, *Z42, *Z43, *Z14, *Z24, *Z34, *phi41, *phi42, *phi43, *c4) + FX47(*X46_n, *Z41_n, *Z42_n, *Z43_n, *Z14_n, *Z24_n, *Z34_n, *phi41_n, *phi42_n, *phi43_n, *c4))*dt;
@@ -1089,7 +1093,7 @@ int main()
     // X41 = matrix::Zero();
     // X42 = matrix::Zero();
     // X43 = matrix::Zero();
-    X44 = matrix::Zero();
+    //X44 = matrix::Zero();
     X45 = matrix::Zero();
     X46 = matrix::Zero();
     X47 = matrix::Zero();
